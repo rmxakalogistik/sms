@@ -1,0 +1,50 @@
+<section id="identifier-onsite" class="identifier-onsite" fxLayout="column" fxFlexFill>
+
+  <div class="wrapper">
+
+    <div *ngIf="!loading&&!currentData">
+
+      <div fxLayout="column" fxLayoutAlign="start center">
+
+        <div fxLayout="row wrap" fxLayoutAlign="center center">
+          <div *ngIf="(loggedUser&&loggedUser.station&&loggedUser.station.docphoto)">
+            <img style='margin:0 auto;display: block;' width='76' [src]="env.API_URL + '/upload/stations/logos/' + loggedUser.station.docphoto + '.jpeg'" />
+          </div>
+        </div>
+
+        <div style="margin: 1rem;">
+          <h3 style="margin: 0 !important;text-align: center;"><small>Bienvenue sur l'application<br/></small>SMS</h3>
+          <div style="font-size:12px;text-align: center;" fxFill><small>{{'v ' + version}}</small></div>
+        </div>
+        <div mat-line style="text-align: center;font-size: 14px;">
+          <div *ngIf="loggedUser.station">
+            <!-- <span>{{loggedUser.station.shownumuni | uppercase}}</span><br /> -->
+            <small style="text-decoration: underline;">{{loggedUser.station.nom | uppercase}}</small><br />
+            <small>{{loggedUser.firstName + ' ' + loggedUser.lastName | uppercase}}</small>
+          </div>
+          <div *ngIf="!loggedUser.station">
+            <div>
+              <span >{{loggedUser.firstName + ' ' + loggedUser.lastName | uppercase}}</span>
+            </div>
+            <small *ngIf="loggedUser.fonction">{{loggedUser.fonction}} | </small>
+            <!-- <small *ngIf="loggedUser.shownumuni">{{loggedUser.shownumuni}}</small> -->
+          </div>
+        </div>
+        
+        <div style="font-size:12px;" *ngIf="localip"><small>Addresse IP locale: {{localip}}</small></div>
+        <div fxLayout="row wrap" fxLayoutAlign="center center">
+          <img style="cursor: pointer;" class="logo" [lazyLoad]="authImage" (click)="refreshToken()">
+          <!-- <img class="logo height-50" [lazyLoad]="authImage_secondaire"> -->
+          
+        </div>
+
+      </div>
+
+      </div>
+
+  </div>
+
+
+</section>
+
+

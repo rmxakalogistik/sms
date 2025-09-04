@@ -1,0 +1,54 @@
+@import '~@angular/material/theming';
+
+@import './app-colors';
+
+@import './app/app-component-theme';
+@import './app/auth/login/login-component-theme';
+@import './app/auth/forgot-password/forgot-password-component-theme';
+@import './app/auth/change-password/change-password-component-theme';
+
+@import './app/secure/secure-component-theme';
+
+$mat-primary: ( main: $primary-color, lighter: $primary-color-light, darker: $primary-color-dark, 200: $primary-color-light, contrast : ( main: $withe-color, lighter: $withe-color, darker: $withe-color, ) );
+$mat-accent: ( main: $accent-color, lighter: $accent-color, darker: $accent-color, 200: $accent-color, contrast : ( main: $accent-color-text, lighter: $accent-color-text, darker: $accent-color-text, ) );
+
+$primary: mat-palette($mat-primary, main, lighter, darker);
+$accent: mat-palette($mat-accent, main);
+$warn: mat-palette($mat-red, 500);
+
+$theme: mat-light-theme($primary, $accent, $warn);
+
+// Styles for the sybox app that are based on the current theme.
+@mixin sybox-app-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  /*$next-theme: mat-palette($mat-red);*/
+  .sybox-app-background {
+    background: mat-color($background, background);
+  }
+
+  /*.sybox-primary-header {
+    background: mat-color($primary);
+
+    h1 {
+      color: mat-color($primary, 900);
+    }
+  }*/
+  /*.sybox-footer {
+    background: mat-color($primary);
+    color: mat-color($primary, default-contrast);
+  }*/
+  /*.is-next-version {
+    background: mat-color($next-theme, 900) !important;
+  }*/
+  @include app-component-theme($theme);
+  @include login-component-theme($theme);
+  @include forgot-password-component-theme($theme);
+  @include change-password-component-theme($theme);
+  @include secure-component-theme($theme);
+
+}
+

@@ -1,0 +1,348 @@
+@import '../../../app-colors';
+
+#rapportsComponent {
+  display: block;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow-y: hidden;
+  padding-bottom: 4rem;
+  background-color: #fff !important;
+
+
+  
+  ::ng-deep .app-toolbar {
+    padding: 0 1rem;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+    z-index: 1000;
+    height: 65px;
+    font: inherit !important;
+
+    .search-input {
+      width: 100%;
+    }
+    .mat-standard-chip {
+      transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      padding: 7px 12px;
+      border-radius: 16px;
+      align-items: center;
+      cursor: default;
+      min-height: 24px;
+      height: 1px;
+      font-size: 11px;
+      .mat-icon {
+        height: 19px;
+        width: 19px;
+        margin-top: 2px;
+        font-size: 19px;
+        margin-left: 7px;
+    }
+  }
+    .mat-chip-list-wrapper .mat-standard-chip {
+      margin: 0;
+  }
+    .mat-standard-chip.mat-chip-with-trailing-icon {
+      padding-top: 9px;
+      padding-bottom: 7px;
+      padding-right: 21px;
+      padding-left: 12px;
+  }
+    .mat-standard-chip .mat-chip-remove, .mat-standard-chip .mat-chip-trailing-icon {
+      width: 14px;
+      height: 26px;
+      cursor: pointer;
+      border: none;
+      background-color: transparent;
+      margin-left: -5px !important;
+  }
+  }
+
+  /*mat-form-field {
+    ::ng-deep .mat-form-field-wrapper {
+      padding-bottom: 0 !important;
+    }
+  }*/
+  #printableRapport {
+    padding-bottom: 75px;
+    margin-bottom: 75px;
+    width: 100%;
+    /*overflow-y: scroll;
+    height: 50vh;*/
+  }
+
+
+  .example-label {
+    display: table-cell;
+    font-size: 14px;
+    margin-left: 8px;
+    min-width: 120px;
+  }
+
+  .example-button-row {
+    padding: 1rem;
+    /*display: table-cell;*/
+    /*width: 100%;*/
+    ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-underline {
+      bottom: 0.25em !important;
+    }
+  }
+
+  .example-button-row .mat-button-base {
+    margin: 8px 8px 8px 0;
+  }
+
+  .example-flex-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .example-button-container {
+    display: flex;
+    justify-content: center;
+    width: 120px;
+  }
+
+  table {
+
+
+
+    td, th {
+      mat-form-field {
+        ::ng-deep .mat-form-field-wrapper {
+          padding-bottom: 0 !important;
+        }
+      }
+
+      .noMarge {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .printStyleTable {
+    text-align: left;
+  }
+
+
+
+  table.printStyleTable {
+    th.styll, td.styll {
+      padding: 3px;
+    }
+
+    th.top, td.top {
+      border-top: solid 0.5px #8f8f8f;
+    }
+
+    th.left, td.left {
+      border-left: solid 0.5px #8f8f8f;
+    }
+
+    th.right, td.right {
+      border-right: solid 0.5px #8f8f8f;
+    }
+
+    th.bottom, td.bottom {
+      border-bottom: solid 0.5px #8f8f8f;
+    }
+
+    td.styll:hover {
+      cursor: pointer;
+      background-color: #6093fb;
+      color: #fff;
+    }
+
+    tr.stylly:hover {
+      cursor: pointer;
+      background-color: #95b8ff;
+      color: #fff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8f8f8;
+    }
+
+    tr:nth-child(odd) {
+    }
+
+    td, th {
+      mat-form-field {
+        ::ng-deep .mat-form-field-wrapper {
+          padding-bottom: 0 !important;
+        }
+      }
+
+      .noMarge {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        cursor: pointer;
+      }
+    }
+
+    .ttitles {
+      background-color: #6093fb;
+      color: #ffffff;
+      font-weight: bold;
+    }
+  }
+
+  
+  .fab-center-container {
+    width: 56px !important;
+    height: 56px !important;
+    margin: 0 auto !important;
+    div.barre-btm {
+      position: absolute;
+      bottom: -30px;
+      width: calc(100vw - 17px);;
+      text-align: center;
+      cursor: pointer;
+      background-color: #6277f6;
+      color: #fff;
+      padding: 1rem 0;
+      font-size: 13px;
+    }
+
+    .fab-container {
+      position: fixed;
+      bottom: 30px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      z-index: 1000;
+
+      .mat-progress-spinner.mat-accent circle,
+      .mat-spinner.mat-accent circle {
+        stroke: #fff !important;
+      }
+
+      > div {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+        margin-bottom: 5px;
+
+        button {
+          margin-bottom: 17px;
+        }
+      }
+    }
+
+    .fab-toggler {
+      float: right;
+      z-index: 100;
+      margin-bottom: 20px;
+      ::ng-deep circle {
+        stroke: #fff !important;
+        color: #fff !important;
+      }
+    }
+  }
+
+  #fab-dismiss {
+    position: fixed;
+    top: -500px !important;
+    left: -500px !important;
+    right: -500px !important;
+    bottom: -500px !important;
+    z-index: 999;
+  }
+
+  .wrapper-main {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    overflow: auto;
+  }
+
+
+
+  // .fab-center-container-top {
+  //   width: 100% !important;
+  //   height: 56px !important;
+  //   margin: 0 auto !important;
+  //   position: fixed;
+
+  //   .search-input {
+  //     width: 100%;
+  //   }
+
+  //   .fab-container {
+  //     position: fixed;
+  //     bottom: 30px;
+  //     z-index: 1000;
+  //     background-color: #fff;
+  //     border-radius: 4px;
+  //     display: flex;
+  //     flex-direction: column-reverse;
+  //     align-items: center;
+  //     padding: 5px;
+  //     min-width: 300px;
+  //     max-width: 80%;
+  //     width: 100%;
+
+  //     > div {
+  //       display: flex;
+  //       flex-direction: column-reverse;
+  //       align-items: center;
+  //       /*margin-bottom: 5px;*/
+  //       button {
+  //           margin-left:5px;
+  //       }
+  //     }
+  //   }
+
+  //   .fab-toggler {
+  //     float: right;
+  //     z-index: 100;
+  //   }
+  // }
+
+  
+  // .fab-center-container {
+  //   width: 56px !important;
+  //   height: 56px !important;
+  //   margin: 0 auto !important;
+
+  //   .fab-container {
+  //     position: fixed;
+  //     bottom: 30px;
+  //     z-index: 100;
+  //     display: flex;
+  //     flex-direction: column-reverse;
+  //     align-items: center;
+  //     z-index: 1000;
+  //         height: 15px;
+  //         width: 100%;
+
+  //     > div {
+  //       display: flex;
+  //       flex-direction: column-reverse;
+  //       align-items: center;
+  //       margin-bottom: 5px;
+
+  //       button {
+  //         margin-bottom: 17px;
+  //       }
+  //     }
+  //   }
+
+  //   .fab-toggler {
+  //     float: right;
+  //     z-index: 100;
+  //     margin-bottom: 20px;
+  //   }
+  // }
+
+
+}

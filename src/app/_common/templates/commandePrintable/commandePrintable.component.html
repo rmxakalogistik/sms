@@ -1,0 +1,159 @@
+<section id="commandePrintable">
+
+  <div id='printRepportPosTicket' #printRepportPosTicket>
+    <div id='dataToPrint-div' *ngIf='dataToPrintPosTicket'>
+      <table id='dataToPrint-table' style='width:100%;background-color:transparent;' cellspacing='0'>
+        <thead>
+          <tr>
+            <td>
+              <!--<app-documentHeader></app-documentHeader>-->
+              <div class='page-header-space'></div>
+            </td>
+          </tr>
+        </thead>
+        <tbody class='divtablebody page'>
+          <tr>
+            <th style='text-align:left;padding: 30px 0 10px 0;'>
+              <strong style='text-align:left;font-size:18px;'>BON DE COMMANDE N° {{dataToPrintPosTicket.date |
+                date:'ddMMyy/':'fr'}}{{dataToPrintPosTicket.dateCreation | date:'HHmm':'fr'}}</strong><br /><br />
+              <strong *ngIf="dataToPrintPosTicket.modificationCompte">
+                <small>AGENT KMOIL</small><br /><span><b>{{dataToPrintPosTicket.modificationCompte.title |
+                    uppercase}}</b></span>
+              </strong>
+              <strong *ngIf='dataToPrintPosTicket.anuulationData'
+                style='color:red;font-size:18px;'><br />ANNULÉ</strong>
+            </th>
+            <th style='text-align:right;padding: 30px 0 10px 0;'>
+              <span>DATE : {{dataToPrintPosTicket.dateCreation | date:'dd/MM/yyyy':'fr'}} {{dataToPrintPosTicket.dateCreation | date:'HH:mm:ss':'fr'}}<br /><br /></span>
+              <strong><small>FOURNISSEUR<br /></small>{{dataToPrintPosTicket.fournisseur.nom | uppercase}}</strong>
+            </th>
+          </tr>
+          <!--<tr>
+          <th colspan='2' style='text-align:center;padding: 30px 0 10px 0;'>
+
+          </th>
+        </tr>-->
+          <tr>
+            <th colspan='2' style='text-align:center;'>
+              <!--DÉTAIL DE LA COMMANDE-->
+            </th>
+          </tr>
+          <tr>
+            <td colspan='2' style='text-align:center;padding: 30px 0 10px 0;'>
+              <div style='width:100%'>
+                <table style='width:100%' cellspacing='0'>
+                  <tbody>
+                    <tr>
+                      <th
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-top: 1px solid #000000 !important;'>
+                        DESTINATAIRE</th>
+                      <th
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-top: 1px solid #000000 !important;'>
+                        DATE ATTENDUE<br />DE LIVRAISON</th>
+                      <th
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-top: 1px solid #000000 !important;'>
+                        PRODUIT</th>
+                      <th
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-top: 1px solid #000000 !important;'>
+                        QUANTITE</th>
+                      <th
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-top: 1px solid #000000 !important;'>
+                        PU<br />CDF</th>
+                      <th
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-right: 1px solid #000000 !important; border-top: 1px solid #000000 !important;'>
+                        PT<br />CDF</th>
+                    </tr>
+                    <tr *ngFor='let element of dataToPrintPosTicket.commandeProduits; let i = index'>
+                      <td
+                        style='text-align:left;border-left: 1px solid #000000 !important; padding: 6px; border-top: 1px solid #000000 !important;'>
+                        <div>
+                          {{i+1}}.
+                          <small *ngIf='element.stationProduit&&element.stationProduit.station'>
+                            STATION <b>{{element.stationProduit.station.nom}}</b>
+                          </small>
+                          <small *ngIf='element.clientProduit&&element.clientProduit.client'>
+                            CLIENT <b>{{element.clientProduit.client.nom}}</b>
+                          </small>
+                        </div>
+                      </td>
+                      <td
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-top: 1px solid #000000 !important;'>
+                        <span>{{element.dateLivraisonPrevue | date:'dd/MM/yyyy':'fr'}}</span>
+                      </td>
+                      <td
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-top: 1px solid #000000 !important;'>
+                        <span *ngIf="element.stationProduitId">{{element.stationProduit.produit.code}}</span>
+                        <span *ngIf="element.clientProduitId">{{element.clientProduit.produit.code}}</span>
+                      </td>
+                      <td
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-top: 1px solid #000000 !important;'>
+                        <span>{{element.qte | number:'1.0-0':'fr'}}</span>
+                      </td>
+                      <td
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-top: 1px solid #000000 !important;'>
+                        <span>{{element.prix | number:'1.2-2':'fr'}}</span>
+                      </td>
+                      <td
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-right: 1px solid #000000 !important; border-top: 1px solid #000000 !important;'>
+                        <span>{{(element.qte*element.prix)|number:'1.2-2':'fr'}}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th
+                        style='text-align:left;border-left: 1px solid #000000 !important; padding: 6px; border-top: 1px solid #000000 !important;'
+                        colspan='3'>TOTAL CDF</th>
+                      <th
+                        style='text-align:right;padding: 6px; border-right: 1px solid #000000 !important; border-top: 1px solid #000000 !important;'
+                        colspan='3'><span>{{sumDataList(dataToPrintPosTicket.commandeProduits) | number:'1.2-2':'fr'}}</span></th>
+                    </tr>
+                    <tr>
+                      <th
+                        style='text-align:center;border-left: 1px solid #000000 !important; padding: 6px; border-right: 1px solid #000000 !important; border-bottom: 1px solid #000000 !important;'
+                        colspan='6'>
+                        <div style='text-align:left;font-style:italic;'>TOTAL CDF (EN LETTRES)</div><br />
+                        <span style='text-align:left;font-style:italic;'>{{''+sumDataList(dataToPrintPosTicket.commandeProduits) | numberToWords:'fr'}}</span>
+                      </th>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th style='text-align: left;'>
+              PAIEMENT<br />
+              <small>BANQUE: <strong>{{dataToPrintPosTicket.banqueChecque.banque.nom}}</strong><br /></small>
+              <small>N° CHECQUE: <strong>{{dataToPrintPosTicket.numcheque}}</strong><br /></small>
+              <!-- <small *ngIf="dataToPrintPosTicket.banque.validitechecque>0">MATURITE:
+                <strong>{{dataToPrintPosTicket.banque.validitechecque}} JOURS</strong><br /></small> -->
+            </th>
+            <th style='text-align:center;'>
+              <small style='font-weight:bold;font-style:italic;'>(SIGNATURE, DATE ET NOM)</small><br />
+              <br />
+            </th>
+          </tr>
+          <!-- <tr>
+            <td colspan='2' style='text-align:center;padding: 6px;'>
+              <div style='width:100%!important;height:200mm !important;page-break-before:always !important;'>
+                <img *ngIf="dataToPrintPosTicket.checquephoto>0" style='width:100%!important;' class='signatureimg'
+                  src="{{env.API_URL + '/upload/checques/' + dataToPrintPosTicket.checquephoto + '.jpeg'}}"
+                  (error)="onImgError($event)" />
+              </div>
+            </td>
+          </tr> -->
+        </tbody>
+        <tfoot>
+
+          <tr>
+            <td>
+              <!--<app-documentFooter></app-documentFooter>-->
+              <div class='page-footer-space'></div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+  </div>
+
+</section>

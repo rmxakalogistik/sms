@@ -1,0 +1,344 @@
+<section id="commandeDialog" matDialogContainer>
+
+
+  <mat-toolbar id="mat-toolbar" class="navigation-toolbar" [ngStyle.lt-sm]="{'height': '50px'}"
+    [class.navigation-is-mobile]="mobileQuery.matches" [class.mat-elevation-z0]="!isActive"
+    [class.mat-elevation-z8]="isActive" [class.animated-header]="!isActivefadeInDown"
+    [class.fadeInDown]="!isActivefadeInDown" [class.navigation-fixed]="!fixedTolbar">
+    <div class="dialog-action" fxLayout="column">
+      <div class="dialog-action" fxLayout="row">
+        <button id="menubutton" mat-icon-button (click)="close()" style="color:white;">
+          <mat-icon fontSet="material-icons-outlined">chevron_left</mat-icon>
+        </button>
+        <button mat-button style="color:white;line-height: normal;text-align: left;">
+          <span
+            style="vertical-align:middle !important;padding: 5px 5px 5px 0;font-size: 12px;">{{action|uppercase}}<br />D'UNE
+            COMMANDE</span>
+        </button>
+        <span class="navigation-spacer"></span>
+        <button mat-button style="color:white;line-height: normal;text-align: left;" *ngIf="canMoveNext()&&!loading"
+          matTooltip="Enregistrer" [matTooltipPosition]="'below'" (click)="confirm(formData.value)">
+          <span style="vertical-align:middle !important;font-size: 12px;"
+            *ngIf="action != 'Suppression'">ENREGISTRER</span>
+          <span style="vertical-align:middle !important;font-size: 12px;"
+            *ngIf="action == 'Suppression'">SUPPRIMER</span>
+          <mat-icon fontSet="material-icons-outlined">check</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+  <div class="navigation-empty" fxShow="false" fxShow.gt-xs="true"></div>
+
+  <div style="padding-top:4rem;" (onScroll)="detectScroll($event)">
+
+    <div fxLayout="column" fxLayoutAlign="center center" class="dialog-action" style="min-height:100px;margin-top:3rem;"
+      *ngIf="loading">
+      <div color="warn" style="text-align:center;">
+        <small><b>Opération en cours.<br />Veuillez patienter s'il vous plait.</b></small>
+      </div>
+      <mat-spinner color="primary" [diameter]="40"></mat-spinner>
+    </div>
+
+    <mat-tab-group *ngIf="!loading" [formGroup]="formData" appDisableAutofill class="app-mat-tab">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          Infos
+        </ng-template>
+        <div class="dialog-form-main" style="padding-top:1rem;padding-bottom:30rem;" (onScroll)="detectScroll($event)">
+
+          <div fxLayout="column" fxLayoutAlign="start center" class="form-contain">
+
+            <div fxLayout="row wrap" fxLayoutAlign="start start">
+
+              <div style="width: 100%;padding: 0.3rem .3rem;">
+
+              </div>
+              <div fxLayout="column" *ngIf="local_data&&local_data.id&&action != 'Suppression'"
+                style="width: 100%;padding: 0.3rem .3rem;">
+
+                <mat-checkbox [formControl]="formData.get('isAnnuler')" color="primary">
+                  Annuler cette commande
+                </mat-checkbox>
+
+              </div>
+
+              <mat-form-field color="primary" appearance="fill" (click)="picker.open()" style="cursor: pointer;">
+                <mat-label>Date de la commande </mat-label>
+                <input appDisableAutofill matInput autocomplete="new-date" [min]="maxDate" [matDatepicker]="picker"
+                  [required]="isRequiredField('date')" readonly [formControl]="formData.get('date')"
+                  [errorStateMatcher]="matcher">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error>
+                  <ng-container *ngFor="let error of errors(formData.get('date'))">
+                    <small>{{ errorMessages[error] }} <br></small>
+                  </ng-container>
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" color="primary" (focus)="!(local_data&&local_data.id)&&selectionDialog('fournisseur', {})"
+                (click)="!(local_data&&local_data.id)&&selectionDialog('fournisseur', {})">
+                <mat-label>Fournisseur </mat-label>
+                <input appDisableAutofill [disabled]="(this.action == 'Création' && this.local_data.fournisseur)"
+                  matInput readonly type="text" [required]="isRequiredField('fournisseur')"
+                  autocomplete="new-fournisseur" [value]="formData.get('fournisseur').value?.title"
+                  [errorStateMatcher]="matcher">
+                <mat-error>
+                  <ng-container *ngFor="let error of errors(formData.get('fournisseur'))">
+                    <small>{{ errorMessages[error] }} <br></small>
+                  </ng-container>
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" color="primary" (focus)="selectionDialog('banqueChecque', {})"
+                (click)="selectionDialog('banqueChecque', {})">
+                <mat-label>Chequier </mat-label>
+                <input appDisableAutofill [disabled]="(this.action == 'Création' && this.local_data.banqueChecque)"
+                  matInput readonly type="text" [required]="isRequiredField('banqueChecque')"
+                  autocomplete="new-banqueChecque" [value]="formData.get('banqueChecque').value?.titleLong"
+                  [errorStateMatcher]="matcher">
+                <mat-error>
+                  <ng-container *ngFor="let error of errors(formData.get('banqueChecque'))">
+                    <small>{{ errorMessages[error] }} <br></small>
+                  </ng-container>
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field color="primary" appearance="fill" *ngIf="formData.get('banqueChecque').value">
+                <mat-label>N° checque </mat-label>
+                <input appDisableAutofill matInput type="number" [min]="0" [max]="15" step="1" autocomplete="new-numcheque"
+                  [required]="isRequiredField('numcheque')" [formControl]="formData.get('numcheque')"
+                  [errorStateMatcher]="matcher">
+                <mat-error>
+                  <ng-container *ngFor="let error of errors(formData.get('numcheque'))">
+                    <small>{{ errorMessages[error] }} <br></small>
+                  </ng-container>
+                </mat-error>
+              </mat-form-field>
+
+
+
+
+            </div>
+
+          </div>
+
+        </div>
+      </mat-tab>
+      <mat-tab *ngIf="formData.valid">
+        <ng-template mat-tab-label>
+          Produits ({{commandeProduits.length}})
+        </ng-template>
+        <div class="dialog-form-main" style="padding-top:1rem;padding-bottom:30rem;" (onScroll)="detectScroll($event)">
+
+          <div class="form-contain">
+
+            <div fxLayout="column" fxLayoutAlign="start center">
+              <div fxLayout="row wrap" fxLayoutAlign="start start">
+
+                <div style="width: 100%;padding: 0.3rem 1.3rem;">
+
+                  <mat-checkbox [formControl]="formDataSubProduit.get('isClient')" color="primary">
+                    Commander pour un client
+                  </mat-checkbox>
+
+                </div>
+                
+                <mat-form-field color="primary" appearance="fill">
+                  <mat-label>Produit <span *ngIf="formData.get('fournisseur').value">
+                    {{formData.get('fournisseur').value?.nom}}</span>
+                  </mat-label>
+                  <mat-select [required]="isRequiredField('fournisseurProduit')"
+                    [formControl]="formDataSubProduit.get('fournisseurProduit')" [errorStateMatcher]="matcher">
+                    <mat-option *ngFor="let item of formData.get('fournisseur').value.fournisseurProduits"
+                      [value]="item">{{item.title}}</mat-option>
+                  </mat-select>
+                  <mat-error>
+                    <ng-container *ngFor="let error of errors(formDataSubProduit.get('fournisseurProduit'))">
+                      <small>{{ errorMessages[error] }} <br></small>
+                    </ng-container>
+                  </mat-error>
+                  <mat-hint>
+                    <small *ngIf="formDataSubProduit.get('fournisseurProduit').value"
+                    style="font-size: 14px;font-weight: bold;">
+                      <span
+                      style="color: #6277f6;">
+                      {{formDataSubProduit.get('fournisseurProduit').value.prix|number:'1.2-2'}} CDF
+                    </span>
+                    </small>
+                  </mat-hint>
+                </mat-form-field>
+
+                <mat-form-field
+                  *ngIf="formDataSubProduit.get('fournisseurProduit').value&&(formDataSubProduit.get('clientProduit').value||formDataSubProduit.get('isClient').value==true)"
+                  appearance="fill" color="primary" (focus)="selectionDialog('clientProduit', {})"
+                  (click)="selectionDialog('clientProduit', {})">
+                  <mat-label>Client </mat-label>
+                  <input appDisableAutofill [disabled]="(this.action == 'Création' && this.local_data.clientProduit)"
+                    matInput readonly type="text" [required]="isRequiredField('clientProduit')"
+                    autocomplete="new-clientProduit" [value]="formDataSubProduit.get('clientProduit').value?.titleLong"
+                    [errorStateMatcher]="matcher">
+                  <mat-error>
+                    <ng-container *ngFor="let error of errors(formDataSubProduit.get('clientProduit'))">
+                      <small>{{ errorMessages[error] }} <br></small>
+                    </ng-container>
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field
+                  *ngIf="formDataSubProduit.get('fournisseurProduit').value&&(formDataSubProduit.get('stationProduit').value||formDataSubProduit.get('isClient').value!=true)"
+                  appearance="fill" color="primary" (focus)="selectionDialog('stationProduit', {})"
+                  (click)="selectionDialog('stationProduit', {})">
+                  <mat-label>Station {{formDataSubProduit.get('stationProduit').value?.station.code}}</mat-label>
+                  <input appDisableAutofill [disabled]="(this.action == 'Création' && this.local_data.stationProduit)"
+                    matInput readonly type="text" [required]="isRequiredField('stationProduit')"
+                    autocomplete="new-stationProduit"
+                    [value]="formDataSubProduit.get('stationProduit').value?.title" [errorStateMatcher]="matcher">
+                  <mat-error>
+                    <ng-container *ngFor="let error of errors(formDataSubProduit.get('stationProduit'))">
+                      <small>{{ errorMessages[error] }} <br></small>
+                    </ng-container>
+                  </mat-error>
+                  <mat-hint>
+                    <small *ngIf="formDataSubProduit.get('stationProduit').value"
+                    style="font-size: 14px;font-weight: bold;">
+                      <span *ngIf="formDataSubProduit.get('stationProduit').value"
+                      style="color: #6277f6;">
+                      
+                    </span>
+                    </small>
+                  </mat-hint>
+                </mat-form-field>
+
+                <mat-form-field style="cursor: pointer;" *ngIf="formDataSubProduit.get('fournisseurProduit').value" color="primary" appearance="fill" (click)="picker1.open()">
+                  <mat-label>A livrer au plutard </mat-label>
+                  <input appDisableAutofill matInput autocomplete="new-dateLivraisonPrevue" [min]="maxDate" [matDatepicker]="picker1"
+                    [required]="isRequiredField('dateLivraisonPrevue')" readonly [formControl]="formDataSubProduit.get('dateLivraisonPrevue')"
+                    [errorStateMatcher]="matcher">
+                  <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                  <mat-datepicker #picker1></mat-datepicker>
+                  <mat-error>
+                    <ng-container *ngFor="let error of errors(formDataSubProduit.get('dateLivraisonPrevue'))">
+                      <small>{{ errorMessages[error] }} <br></small>
+                    </ng-container>
+                  </mat-error>
+                </mat-form-field>
+  
+                <mat-form-field *ngIf="formDataSubProduit.get('fournisseurProduit').value" color="primary"
+                  appearance="fill">
+                  <mat-label>Qté (litres) </mat-label>
+                  <input appDisableAutofill matInput min="0" type="number" autocomplete="new-qte"
+                    [required]="isRequiredField('qte')" [formControl]="formDataSubProduit.get('qte')"
+                    [errorStateMatcher]="matcher">
+                  <!-- <span matSuffix>&nbsp;CDF</span> -->
+                  <mat-error>
+                    <ng-container *ngFor="let error of errors(formDataSubProduit.get('qte'))">
+                      <small>{{ errorMessages[error] }} <br></small>
+                    </ng-container>
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field color="primary" appearance="fill">
+                  <mat-label>BL </mat-label>
+                  <input appDisableAutofill matInput type="text" autocomplete="new-bl"
+                    [required]="isRequiredField('bl')" [formControl]="formDataSubProduit.get('bl')"
+                    [errorStateMatcher]="matcher">
+                  <mat-error>
+                    <ng-container *ngFor="let error of errors(formDataSubProduit.get('bl'))">
+                      <small>{{ errorMessages[error] }} <br></small>
+                    </ng-container>
+                  </mat-error>
+                </mat-form-field>
+  
+                <mat-form-field color="primary" appearance="fill">
+                  <mat-label>DC </mat-label>
+                  <input appDisadceAutofill matInput type="text" autocomplete="new-dc"
+                    [required]="isRequiredField('dc')" [formControl]="formDataSubProduit.get('dc')"
+                    [errorStateMatcher]="matcher">
+                  <mat-error>
+                    <ng-container *ngFor="let error of errors(formDataSubProduit.get('dc'))">
+                      <small>{{ errorMessages[error] }} <br></small>
+                    </ng-container>
+                  </mat-error>
+                </mat-form-field>
+  
+                <div class="mat-field-priv" fxLayout="row" fxLayoutAlign="start start"
+                  *ngIf="!loading&&formDataSubProduit.valid&&action != 'Suppression'">
+                  <button mat-raised-button color="primary" (click)="addProduit(formDataSubProduit.value)">
+                    <span *ngIf="tempIndexProduit>=0"
+                      style="vertical-align:middle !important;font-size: 12px;">MODIFIER</span>
+                    <span *ngIf="tempIndexProduit<0"
+                      style="vertical-align:middle !important;font-size: 12px;">AJOUTER</span>
+                  </button>
+                  <button *ngIf="tempIndexProduit>=0" mat-raised-button (click)="cancelProduit()"
+                    style="margin-left: 13px">
+                    <span style="vertical-align:middle !important;font-size: 12px;">ANNULER</span>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+            <table style="width: 100%;">
+              <tr>
+                <th style="text-align: left;"><small>Zone-Produit</small></th>
+                <th style="text-align: left;"><small>Destination</small></th>
+                <th style="text-align: left;"><small>A livrer<br/>au plus tard</small></th>
+                <th style="text-align: left;"><small>Qte<br />Litres</small></th>
+                <th style="text-align: left;"><small>P.U<br />CDF</small></th>
+                <th style="text-align: left;"><small>P.T<br />CDF</small></th>
+                <th style="text-align: left;padding-left: 8px;">#</th>
+              </tr>
+              <tr *ngFor="let item of commandeProduits;let i = index;"
+                [ngStyle]="{'font-weight': (i==tempIndexProduit?'bold':'normal')}">
+                <td>{{item.fournisseurProduit?.title}}</td>
+                <td>
+                  <span *ngIf="item.stationProduit">{{item.stationProduit?.title}}</span>
+                  <span *ngIf="item.clientProduit">{{item.clientProduit?.title}}</span>
+                </td>
+                <td>{{item.dateLivraisonPrevue| date:'dd/MM/yyyy'}} <span></span></td>
+                <td>{{item.qte|number:'1.2-2'}} <span></span></td>
+                <td>{{item.prix|number:'1.2-2'}} <span></span></td>
+                <td>{{(item.prix*item.qte)|number:'1.2-2'}} <span></span></td>
+                <!-- <td>
+                  <mat-icon fontSet="material-icons-outlined" class="noMarge" color="primary" (click)="editProduit(item, i)">
+                    more_vert</mat-icon>
+                </td> -->
+                <td>
+                  <div fxLayout="row" *ngIf="i!=tempIndexProduit">
+
+                    <button mat-icon-button style="cursor: pointer;" (click)="editProduit(item, i)">
+                      <mat-icon fontSet="material-icons-outlined" class="noMarge">
+                        edit</mat-icon>
+                    </button>
+
+                    <button mat-icon-button style="cursor: pointer;margin-left: 5px;" color="warn"
+                      (click)="deleteProduit(i)">
+                      <mat-icon fontSet="material-icons-outlined" class="noMarge">
+                        delete</mat-icon>
+                    </button>
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+  </div>
+
+  <div class="fab-center-container" fxLayout="row" fxLayoutAlign="center center">
+    <div class="fab-container">
+      <button color="primary" mat-fab class="fab-toggler" *ngIf="canMoveNext()&&!loading"
+        (click)="confirm(formData.value)">
+        <i class="material-icons" color="accent">check</i>
+      </button>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="loading">
+        <mat-spinner color="accent" [diameter]="25"></mat-spinner>
+      </button>
+    </div>
+  </div>
+
+</section>

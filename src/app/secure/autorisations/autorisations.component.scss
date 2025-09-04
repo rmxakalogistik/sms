@@ -1,0 +1,117 @@
+
+.sybox-primary-header {
+  background-color: transparent;
+}
+
+.logo {
+  width: 120px;
+}
+
+.user-header-image {
+  background-image: var(--userheaderimage);
+  background-size: cover;
+  cursor: pointer;
+}
+
+main {
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+}
+
+.example-container {
+  text-align: center;
+}
+
+
+.example-card {
+  margin-top: 20px;
+
+  img {
+    margin: auto 0;
+    width: 100% !important;
+  }
+}
+
+
+table {
+  width: 100%;
+
+  th, td {
+    text-align: center;
+  }
+
+  .left {
+    text-align: left;
+  }
+
+  .right {
+    text-align: right;
+  }
+
+  .center {
+    text-align: center;
+  }
+}
+
+.form-container {
+  min-width: 300px;
+  margin: 0 auto;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 100);
+  border-radius: 5px;
+
+  h4 {
+    font-weight: 300;
+    font-size: 15px;
+  }
+}
+
+.form-field {
+  display: block
+}
+
+input {
+  font-weight: 300;
+}
+
+.dialog-action {
+  width: 100%;
+}
+
+.divider {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: 300;
+}
+
+.orDivider {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  .line {
+    flex: 1;
+  }
+
+  .text {
+    font-weight: 300;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+::ng-deep .error-snackbar {
+  background: #d40000;
+  color: #ffffff;
+  font-size: 10px;
+
+  mat-button {
+    color: #ffffff;
+  }
+}

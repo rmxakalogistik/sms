@@ -1,0 +1,252 @@
+<section id="ticketPrintable">
+
+  <!-- style='width:55mm;margin: 0 auto;overflow-x: scroll;' -->
+  <div id='printRepportPosTicket' #printRepportPosTicket 
+  style='margin: 0 auto;background-color: #fff;'
+  >
+    <div id='dataToPrint-div' *ngIf='dataToPrintPosTicket'>
+      <table id='dataToPrint-table' style='width:55mm;background-color:transparent;margin:auto;' cellspacing='0'>
+        <tbody class='divtablebody page'>
+          <tr>
+            <td style='text-align: center;border:solid 1px rgb(226, 226, 226);'>
+              <br />
+              <div *ngIf="!dataToPrintPosTicket.isEtiquette" style="line-height: normal;width:55mm;font-size: 15px;">
+                <img style='margin:0 auto;display: block;' width='76' [src]='authImage' />
+                <div style="font-weight: 900;font-size: 25px;"><small>{{dataToPrintPosTicket.typedevente}} N°</small></div>
+                <b  style='font-size: 25px;'>{{dataToPrintPosTicket.shownumuni}}</b>
+                <div style="font-weight: 900;"><small>{{dataToPrintPosTicket.vol.trajetOrigine}}</small></div>
+                <b  style='font-size: 25px;'>{{dataToPrintPosTicket.vol.trajetDestination}}</b>
+                <div style="font-weight: 900;"><small>{{dataToPrintPosTicket.vol.jourVol|uppercase}}</small></div>
+                <div *ngIf="dataToPrintPosTicket.arret">
+                  <small>
+                    DEST. <b>{{dataToPrintPosTicket.arret|uppercase}}</b>
+                  </small>
+                </div>
+                <b  style='font-size: 25px;'>{{dataToPrintPosTicket.vol.dateVol}}</b>
+                <div *ngIf='qrcodevalue'>
+                  <ngx-qrcode [elementType]='elementType' [errorCorrectionLevel]='correctionLevel' [value]='qrcodevalue'
+                    cssClass='bshadow'></ngx-qrcode>
+                </div>
+              </div>
+              <table *ngIf="!dataToPrintPosTicket.isEtiquette" style="width:55mm;font-size: 15px;" cellspacing='0'>
+                <thead>
+                  <tr>
+                    <th style="width:10mm;"></th>
+                    <th style="width:10mm;"></th>
+                    <th style="width:17mm;"></th>
+                    <th style="width:18mm;"></th>
+                  </tr>
+                </thead>
+                <thead>
+                  <tr>
+                    <th colspan="4" style="border-bottom:solid 1px rgb(226, 226, 226);">
+                      <div style="font-weight: 900;text-align: left;float: left;">
+                        <small *ngIf="dataToPrintPosTicket.typedevente=='BILLET'">IDENTITÉ: </small>
+                        <small *ngIf="dataToPrintPosTicket.typedevente=='FRET'">EXP.: </small>
+                      </div>
+                      <div style="text-align: right;">
+                        <b style="font-weight: 900;"><small>{{dataToPrintPosTicket.identiteOrigine|uppercase}}</small></b>
+                      </div>
+                      </th>
+                  </tr>
+                  <tr *ngIf="dataToPrintPosTicket.typedevente=='FRET'">
+                    <th colspan="4" style="border-bottom:solid 1px rgb(226, 226, 226);">
+                      <div style="font-weight: 900;text-align: left;float: left;">
+                        <small>DEST.: </small>
+                      </div>
+                      <div style="text-align: right;">
+                        <b style="font-weight: 900;"><small>{{dataToPrintPosTicket.identiteDestination|uppercase}}</small></b>
+                      </div>
+                      </th>
+                  </tr>
+                  <tr *ngIf="dataToPrintPosTicket.nbrecolis>0">
+                    <th colspan="4" style="border-bottom:solid 1px rgb(226, 226, 226);">
+                      <div style="font-weight: 900;text-align: left;float: left;">
+                        <small>COLIS: </small>
+                      </div>
+                      <div style="text-align: right;">
+                        <b style="font-weight: 900;"><small>{{dataToPrintPosTicket.nbrecolis|number:'2.0-0':'fr'}}</small></b>
+                      </div>
+                      </th>
+                  </tr>
+                  <tr *ngIf="dataToPrintPosTicket.poid>0">
+                    <th colspan="4" style="border-bottom:solid 1px rgb(226, 226, 226);">
+                      <div style="font-weight: 900;text-align: left;float: left;">
+                        <small>FRET (KG): </small>
+                      </div>
+                      <div style="text-align: right;">
+                        <b style="font-weight: 900;"><small>{{dataToPrintPosTicket.poid|number:'1.2-2':'fr'}}</small></b>
+                      </div>
+                      </th>
+                  </tr>
+                  <tr *ngIf="dataToPrintPosTicket.typedevente=='BILLET'">
+                    <th colspan="4" style="border-bottom:solid 1px rgb(226, 226, 226);">
+                      <div style="font-weight: 900;text-align: left;float: left;">
+                        <small>BILLET (CDF): </small>
+                      </div>
+                      <div style="text-align: right;">
+                        <b style="font-weight: 900;"><small>{{dataToPrintPosTicket.vol.ticketPrice_eco|number:'1.2-2':'fr'}}</small></b>
+                      </div>
+                      </th>
+                  </tr>
+                  <tr *ngIf="dataToPrintPosTicket.poidtotal>0">
+                    <th colspan="4" style="border-bottom:solid 1px rgb(226, 226, 226);">
+                      <div style="font-weight: 900;text-align: left;float: left;">
+                        <small>FRET (CDF): </small>
+                      </div>
+                      <div style="text-align: right;">
+                        <b style="font-weight: 900;"><small>{{dataToPrintPosTicket.montant|number:'1.2-2':'fr'}}</small></b>
+                      </div>
+                      </th>
+                  </tr>
+                  <tr *ngIf="dataToPrintPosTicket.poidtotal>0">
+                    <th colspan="4" style="border-bottom:solid 1px rgb(226, 226, 226);">
+                      <div style="font-weight: 900;text-align: left;float: left;">
+                        <small>TOTAL (CDF): </small>
+                      </div>
+                      <div style="text-align: right;">
+                        <b style="font-weight: 900;"><small>{{dataToPrintPosTicket.montantTotal|number:'1.2-2':'fr'}}</small></b>
+                      </div>
+                      </th>
+                  </tr>
+                  <tr>
+                    <th colspan="4" style="border-bottom:solid 1px rgb(226, 226, 226);">
+                      <div>
+                        <strong>
+                          {{dataToPrintPosTicket.status_paiement}}
+                        </strong>
+                        <small *ngIf="dataToPrintPosTicket.status_paiement=='ACCOMPTE'">
+                          <div>
+                            <small>
+                              PAYÉE <span>{{dataToPrintPosTicket.paiementTotal | number:'1.2-2':'fr'}}</span>
+                            </small>
+                          </div>
+                          <div *ngIf="(dataToPrintPosTicket.montantTotal-dataToPrintPosTicket.paiementTotal)>=0">
+                            <strong>
+                              SOLDE <span>{{(dataToPrintPosTicket.montantTotal-dataToPrintPosTicket.paiementTotal) | number:'1.2-2':'fr'}}</span>
+                            </strong>
+                          </div>
+                        </small>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <!-- <tbody>
+                  <tr *ngFor='let elem of dataToPrintPosTicket.venteArticles'>
+                    <td style="text-align: center;border-top: #000 1px dashed;">{{elem.qte | number:'2.0-0':'fr'}}</td>
+                    <td style="text-align: left;border-top: #000 1px dashed;">{{elem.article.nomdarticle}}</td>
+                    <td style="text-align: right;border-top: #000 1px dashed;">{{elem.pUnitaire | number:'1.2-2':'fr'}}
+                    </td>
+                    <td style="text-align: right;border-top: #000 1px dashed;">{{elem.pTotal | number:'1.2-2':'fr'}}
+                    </td>
+                  </tr>
+                </tbody> -->
+                <!-- <thead>
+                  <tr>
+                    <td colspan="2" style="text-align: left;border-top: #000 1px dashed;">SOUS-TOTAL :</td>
+                    <td colspan="2" style="text-align: right;border-top: #000 1px dashed;">{{dataToPrintPosTicket.pTotal
+                      | number:'1.2-2':'fr'}} {{dataToPrintPosTicket.devise.nomdedevise}}</td>
+                  </tr>
+                  <tr *ngFor='let elem of dataToPrintPosTicket.venteTaxes'>
+                    <td colspan="2" style="text-align: left;">{{elem.taxe.title}}:</td>
+                    <td colspan="2" style="text-align: right;">{{(elem.__valeur*dataToPrintPosTicket.pTotal) |
+                      number:'1.2-2':'fr'}} {{dataToPrintPosTicket.devise.nomdedevise}}</td>
+                  </tr>
+                  <tr>
+                    <th colspan="2" style="text-align: left;">TOTAL TTC :</th>
+                    <th colspan="2" style="text-align: right;">{{dataToPrintPosTicket.pTotalTTC | number:'1.2-2':'fr'}}
+                      {{dataToPrintPosTicket.devise.nomdedevise}}</th>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="text-align: left;border-top: #000 1px dashed;">ENCAISSÉ :</td>
+                    <td colspan="2" style="text-align: right;border-top: #000 1px dashed;">
+                      {{dataToPrintPosTicket.paiementTotal | number:'1.2-2':'fr'}}
+                      {{dataToPrintPosTicket.devise.nomdedevise}}</td>
+                  </tr>
+                  <tr>
+                    <th colspan="2" style="text-align: left;">SOLDE :</th>
+                    <th colspan="2" style="text-align: right;">
+                      {{(dataToPrintPosTicket.pTotalTTC-dataToPrintPosTicket.paiementTotal) | number:'1.2-2':'fr'}}
+                      {{dataToPrintPosTicket.devise.nomdedevise}}</th>
+                  </tr>
+                </thead> -->
+              </table>
+              <div *ngIf="!dataToPrintPosTicket.isEtiquette" style="line-height: normal;">
+                <div style="font-weight: 900;">***</div>
+                <div style="font-size: 9px;font-weight: 900;">MERCI DE NOUS AVOIR CHOISI</div>
+                <div style="font-weight: 900;">***</div>
+                <div style="font-weight: 900;">SMS</div>
+              </div>
+              <table *ngIf="dataToPrintPosTicket.isEtiquette" style="width:55mm;font-size: 15px;" cellspacing='0'>
+                <thead>
+                  <tr>
+                    <th style="width:10mm;"></th>
+                    <th style="width:10mm;"></th>
+                    <th style="width:17mm;"></th>
+                    <th style="width:18mm;"></th>
+                  </tr>
+                </thead>
+                <tbody *ngFor='let elem of dataToPrintPosTicket.listenbrecolis'>
+                  <tr>
+                    <td style="text-align: center;border-top: #000 5px dashed;">
+                      <div style="line-height: normal;width:55mm;font-size: 15px;">
+                        <img style='margin:0 auto;display: block;' width='76' [src]='authImage' />
+                        <div style="font-weight: 900;font-size: 25px;"><small>{{dataToPrintPosTicket.typedevente}} N°</small></div>
+                        <b  style='font-size: 25px;'>{{dataToPrintPosTicket.shownumuni}}</b>
+                        <div style="font-weight: 900;"><small>{{dataToPrintPosTicket.vol.trajetOrigine}}</small></div>
+                        <b  style='font-size: 25px;'>{{dataToPrintPosTicket.vol.trajetDestination}}</b>
+                        <div style="font-weight: 900;"><small>{{dataToPrintPosTicket.vol.jourVol|uppercase}}</small></div>
+                        <div *ngIf="dataToPrintPosTicket.arret">
+                          <small>
+                            DEST. <b>{{dataToPrintPosTicket.arret|uppercase}}</b>
+                          </small>
+                        </div>
+                        <b  style='font-size: 25px;'>{{dataToPrintPosTicket.vol.dateVol}}</b>
+                        <div *ngIf='qrcodevalue'>
+                          <ngx-qrcode [elementType]='elementType' [errorCorrectionLevel]='correctionLevel' [value]='qrcodevalue'
+                            cssClass='bshadow'></ngx-qrcode>
+                        </div>
+                      </div>
+                      <b  style='font-size: 25px;'>{{elem | number:'2.0-0':'fr'}}/{{dataToPrintPosTicket.nbrecolis | number:'2.0-0':'fr'}}</b>
+                      
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" style="border-bottom:solid 1px rgb(226, 226, 226);">
+                      <div style="font-weight: 900;text-align: left;float: left;">
+                        <small *ngIf="dataToPrintPosTicket.typedevente=='BILLET'">IDENTITÉ: </small>
+                        <small *ngIf="dataToPrintPosTicket.typedevente=='FRET'">EXP.: </small>
+                      </div>
+                      <div style="text-align: right;">
+                        <b style="font-weight: 900;"><small>{{dataToPrintPosTicket.identiteOrigine|uppercase}}</small></b>
+                      </div>
+                      </td>
+                  </tr>
+                  <tr *ngIf="dataToPrintPosTicket.typedevente=='FRET'">
+                    <td colspan="4" style="border-bottom:solid 1px rgb(226, 226, 226);">
+                      <div style="font-weight: 900;text-align: left;float: left;">
+                        <small>DEST.: </small>
+                      </div>
+                      <div style="text-align: right;">
+                        <b style="font-weight: 900;"><small>{{dataToPrintPosTicket.identiteDestination|uppercase}}</small></b>
+                      </div>
+                      </td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" >
+                      <br /><br /><br />
+                    </td>
+                  </tr>
+                </tbody>
+                
+              </table>
+              <br />
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+    </div>
+
+  </div>
+</section>

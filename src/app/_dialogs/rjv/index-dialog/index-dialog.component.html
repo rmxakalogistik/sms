@@ -1,0 +1,203 @@
+<section id="indexDialog" matDialogContainer>
+
+
+  <mat-toolbar id="mat-toolbar" class="navigation-toolbar" [ngStyle.lt-sm]="{'height': '50px'}"
+    [class.navigation-is-mobile]="mobileQuery.matches" [class.mat-elevation-z0]="!isActive"
+    [class.mat-elevation-z8]="isActive" [class.animated-header]="!isActivefadeInDown"
+    [class.fadeInDown]="!isActivefadeInDown" [class.navigation-fixed]="!fixedTolbar">
+    <div class="dialog-action" fxLayout="column">
+      <div class="dialog-action" fxLayout="row">
+        <button id="menubutton" mat-icon-button (click)="close()" style="color:white;">
+          <mat-icon fontSet="material-icons-outlined">chevron_left</mat-icon>
+        </button>
+        <button mat-button style="color:white;line-height: 14px;text-align: left;">
+          <span *ngIf="local_data.station"
+            style="vertical-align:middle !important;padding: 5px 5px 5px 0;font-size: 13px;">{{local_data.station.code|uppercase}}<br />
+            SORTIES POMPE<br/>{{local_data.date|date:'dd/MM/yyyy'}}</span>
+        </button>
+        <span class="navigation-spacer"></span>
+        <button mat-button style="color:white;line-height: normal;text-align: left;" *ngIf="canMoveNext()&&!loading&&!this.local_data.dateValidation"
+          matTooltip="Enregistrer" [matTooltipPosition]="'below'" (click)="confirm(formData.value)">
+          <span style="vertical-align:middle !important;font-size: 12px;"
+            *ngIf="action != 'Suppression'">ENREGISTRER</span>
+          <span style="vertical-align:middle !important;font-size: 12px;"
+            *ngIf="action == 'Suppression'">SUPPRIMER</span>
+          <mat-icon fontSet="material-icons-outlined">check</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+  <div class="navigation-empty" fxShow="false" fxShow.gt-xs="true"></div>
+
+  <div style="padding-top:4rem;" (onScroll)="detectScroll($event)">
+
+    <div fxLayout="column" fxLayoutAlign="center center" class="dialog-action" style="min-height:100px;margin-top:3rem;"
+      *ngIf="loading">
+      <div color="warn" style="text-align:center;">
+        <small><b>Opération en cours.<br />Veuillez patienter s'il vous plait.</b></small>
+      </div>
+      <mat-spinner color="primary" [diameter]="40"></mat-spinner>
+    </div>
+
+    <mat-tab-group *ngIf="!loading" [formGroup]="formData" appDisableAutofill class="app-mat-tab">
+     <mat-tab>
+        <ng-template mat-tab-label>
+          Produits ({{indexProduits.length}})
+        </ng-template>
+        <div class="dialog-form-main" style="padding-top:1rem;padding-bottom:30rem;" (onScroll)="detectScroll($event)">
+
+          <div class="form-contain">
+
+            <div fxLayout="column" fxLayoutAlign="start center" *ngIf="!this.local_data.dateValidation">
+              <div fxLayout="row wrap" fxLayoutAlign="start start">
+
+                <div style="width: 100%;padding: 0.3rem .3rem;">
+
+                </div>
+                
+              <mat-form-field color="primary" appearance="fill">
+                <mat-label>Pompe </mat-label>
+                <mat-select [required]="isRequiredField('stationPompe')" [formControl]="formData.get('stationPompe')"
+                  [errorStateMatcher]="matcher">
+                  <mat-option *ngFor="let item of stationPompes" [value]="item">{{item.title}}</mat-option>
+                </mat-select>
+                <mat-error>
+                  <ng-container *ngFor="let error of errors(formData.get('stationPompe'))">
+                    <small>{{ errorMessages[error] }} <br></small>
+                  </ng-container>
+                </mat-error>
+                <mat-hint>
+                  <small *ngIf="formData.get('stationPompe').value"
+                  style="font-size: 14px;font-weight: bold;">
+                    <span
+                    style="color: #6277f6;">
+                    DEBUT {{formData.get('stationPompe').value.lastIndex|number:'1.2-2'}}
+                  </span>
+                  </small>
+                </mat-hint>
+              </mat-form-field>
+              
+                <mat-form-field *ngIf="formData.get('stationPompe').value" color="primary"
+                  appearance="fill">
+                  <mat-label><small *ngIf="formData.get('stationPompe').value"
+                    style="font-size: 14px;font-weight: bold;">
+                      <span
+                      style="color: #6277f6;">
+                      DEBUT {{formData.get('stationPompe').value.lastIndex|number:'1.2-2'}}
+                    </span>
+                    </small> - Fin </mat-label>
+                  <input appDisableAutofill matInput type="number"
+                  autocomplete="new-fin"
+                    [required]="isRequiredField('fin')" [formControl]="formData.get('fin')"
+                    [errorStateMatcher]="matcher">
+                  <mat-error>
+                    <ng-container *ngFor="let error of errors(formData.get('fin'))">
+                      <small>{{ errorMessages[error] }} <br></small>
+                    </ng-container>
+                  </mat-error>
+                  <mat-hint>
+                    <small *ngIf="formData.get('stationPompe').value&&formData.get('fin').value"
+                    style="font-size: 14px;font-weight: bold;">
+                      <span
+                      style="color: #6277f6;">
+                      {{(formData.get('fin').value-formData.get('stationPompe').value.lastIndex)|number:'1.2-2'}} Litres
+                    </span>
+                    </small>
+                  </mat-hint>
+                </mat-form-field>
+
+                <mat-form-field *ngIf="formData.get('stationPompe').value" color="primary" appearance="fill">
+                  <mat-label>Observation </mat-label>
+                  <textarea appDisableAutofill matInput autocomplete="new-obs" 
+                  [required]="isRequiredField('obs')"
+                  [formControl]="formData.get('obs')"
+                  [errorStateMatcher]="matcher"
+                          cdkTextareaAutosize
+                          cdkAutosizeMinRows="1"
+                          cdkAutosizeMaxRows="5"
+                          [errorStateMatcher]="matcher"></textarea>
+                  <mat-error>
+                    <ng-container *ngFor="let error of errors(formData.get('obs'))">
+                      <small>{{ errorMessages[error] }} <br></small>
+                    </ng-container>
+                  </mat-error>
+                </mat-form-field>
+    
+                <div class="mat-field-priv" fxLayout="row" fxLayoutAlign="start start"
+                  *ngIf="!loading&&formData.valid&&action != 'Suppression'">
+                  <button mat-raised-button color="primary" (click)="addProduit(formData.value)"
+                  *ngIf="(formData.get('fin').value-formData.get('stationPompe').value.lastIndex)>=0">
+                    <span *ngIf="tempIndexProduit>=0"
+                      style="vertical-align:middle !important;font-size: 12px;">MODIFIER</span>
+                    <span *ngIf="tempIndexProduit<0"
+                      style="vertical-align:middle !important;font-size: 12px;">AJOUTER</span>
+                  </button>
+                  <button *ngIf="tempIndexProduit>=0||formData.valid" mat-raised-button (click)="cancelProduit()"
+                    style="margin-left: 13px">
+                    <span style="vertical-align:middle !important;font-size: 12px;">ANNULER</span>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+            <table style="width: 100%;">
+              <tr>
+                <th style="text-align: left;"><small>Pompe</small></th>
+                <th style="text-align: left;"><small>Index<br />Debut</small></th>
+                <th style="text-align: left;"><small>Index<br />Fin</small></th>
+                <th style="text-align: left;"><small>Qte<br />Litres</small></th>
+                <th style="text-align: left;"><small>Obs<br /></small></th>
+                <th style="text-align: left;padding-left: 8px;">#</th>
+              </tr>
+              <tr *ngFor="let item of indexProduits;let i = index;"
+                [ngStyle]="{'font-weight': (i==tempIndexProduit?'bold':'normal'), 'text-decoration':(item.deleted?'line-through':'none')}">
+                <td>
+                  <span *ngIf="item.stationPompe?.title">{{item.stationPompe?.title}}</span>
+                </td>
+                <td>{{item.debut|number:'1.2-2'}} <span></span></td>
+                <td>{{item.fin|number:'1.2-2'}} <span></span></td>
+                <td>{{item.qte|number:'1.2-2'}} <span></span></td>
+                <td *ngIf="!this.local_data.dateValidation">{{item.obs}} <span></span></td>
+                <!-- <td>
+                  <mat-icon fontSet="material-icons-outlined" class="noMarge" color="primary" (click)="editProduit(item, i)">
+                    more_vert</mat-icon>
+                </td> -->
+                <td *ngIf="!this.local_data.dateValidation">
+                  <div fxLayout="row" *ngIf="i!=tempIndexProduit&&indexCheckerProduit(item)">
+
+                    <button mat-icon-button style="cursor: pointer;" (click)="editProduit(item, i)">
+                      <mat-icon fontSet="material-icons-outlined" class="noMarge">
+                        edit</mat-icon>
+                    </button>
+
+                    <button mat-icon-button style="cursor: pointer;margin-left: 5px;" color="warn"
+                      (click)="deleteProduit(i)" *ngIf="!item.deleted">
+                      <mat-icon fontSet="material-icons-outlined" class="noMarge">
+                        delete</mat-icon>
+                    </button>
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+  </div>
+
+  <div class="fab-center-container" fxLayout="row" fxLayoutAlign="center center">
+    <div class="fab-container">
+      <button color="primary" mat-fab class="fab-toggler" *ngIf="canMoveNext()&&!loading&&!this.local_data.dateValidation"
+        (click)="confirm(formData.value)">
+        <i class="material-icons" color="accent">check</i>
+      </button>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="loading">
+        <mat-spinner color="accent" [diameter]="25"></mat-spinner>
+      </button>
+    </div>
+  </div>
+
+</section>

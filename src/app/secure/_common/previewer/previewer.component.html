@@ -1,0 +1,40 @@
+<section id="previewerDocument">
+  <mat-toolbar id="mat-toolbar" class="navigation-toolbar" [ngStyle.lt-sm]="{'height': '50px'}" [class.navigation-is-mobile]="mobileQuery.matches" [class.mat-elevation-z0]="!isActive" [class.mat-elevation-z8]="isActive" [class.animated-header]="!isActivefadeInDown" [class.fadeInDown]="!isActivefadeInDown" [class.navigation-fixed]="!fixedTolbar">
+    <div class="dialog-action" fxLayout="column">
+      <div class="dialog-action" fxLayout="row">
+        <button id="menubutton" mat-icon-button (click)="close()" style="color:white;">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span fxLayout="row" fxLayoutAlign="start center" style="color:white;font:inherit !important;font-size: 12px !important;vertical-align: middle !important;padding: 5px 5px 5px 0;margin-left:5px;line-height: normal !important;">
+          <span fxLayout="column" fxLayoutAlign="start start"><small>APPERÇU DU DOCUMENT</small></span>
+        </span>
+        <span class="navigation-spacer"></span>
+        <!--<button mat-raised-button color="accent" *ngIf="local_data&&!loading&&local_data.to" (click)="sendEmail()"><mat-icon>email</mat-icon> ENVOYER PAR EMAIL</button>-->
+        <button mat-button style="color:white;line-height: normal;text-align: left;" *ngIf="!loading" matTooltip="IMPRIMER" [matTooltipPosition]="'below'" (click)="print()" cdkFocusInitial>
+          <span style="vertical-align:middle !important;font-size: 12px;"><small>IMPRIMER</small></span>
+          <mat-icon>print</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+  <div class="navigation-empty" fxShow="false" fxShow.gt-xs="true"></div>
+
+  <div style="height:46vh;overflow-y: auto;padding-top:4rem;padding-bottom:30rem;" (onScroll)="detectScroll($event)">
+
+    <div fxLayout="column" fxLayoutAlign="center center" *ngIf="loading" class="loading-div" style="min-height:100px;">
+      <div color="warn">
+        <small><b>Opération en cours. Veuillez patienter s'il vous plait.</b></small>
+      </div>
+      <mat-spinner color="primary" [diameter]="20"></mat-spinner>
+    </div>
+
+
+    <div> 
+      <div #printDevi id="contentToConvert"></div>
+      <div #hheader style="visibility:hidden"><div class="page-header" style="text-align: center; background-color:#ffffff;"><app-documentHeader></app-documentHeader></div></div>
+      <div #ffooter style="visibility:hidden"><div class="page-footer" style="text-align: center; background-color:#ffffff;"><app-documentFooter></app-documentFooter></div></div>
+    </div>
+
+
+  </div>
+</section>

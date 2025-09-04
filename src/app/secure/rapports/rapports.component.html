@@ -1,0 +1,267 @@
+<section id="rapportsComponent" class="rapportsComponent">
+
+  <div class="fab-center-container-top" *ngIf="selectedStation&&!isLoading">
+    <div fxLayout="row" fxLayoutAlign="start center" style="width:100%;padding:1rem;background-color: #fff;">
+      <!-- <div fxLayout="row" fxLayoutAlign="center center">
+        <button mat-icon-button color="primary" (click)="selectionDialog('repportList')" [disabled]="isLoading">
+          <mat-icon color="primary" matTooltip="Liste des rapports disponibles" [matTooltipPosition]="'below'">list_alt
+          </mat-icon>
+        </button>
+      </div> -->
+      <div fxLayout="row">
+        <div *ngIf="local_data.rapportTitre&&local_data.rapportTitre.canDate">
+          <mat-form-field appearance="legacy" color="primary" style="max-width: 82px;cursor:pointer;"
+            (click)="pickerDebut.open()">
+            <mat-label>Date début </mat-label>
+            <input matInput [matDatepicker]="pickerDebut" [(ngModel)]="local_data.date_debut" readonly
+              (ngModelChange)="changeDate(1)" style="cursor:pointer;">
+            <!-- <mat-datepicker-toggle matSuffix [for]="pickerDebut"></mat-datepicker-toggle>  [max]="maxDate"-->
+            <mat-datepicker #pickerDebut [disabled]="false"></mat-datepicker>
+          </mat-form-field>
+          <span>-</span>
+          <mat-form-field appearance="legacy" color="primary" style="max-width: 82px;cursor:pointer;"
+            (click)="pickerFin.open()">
+            <mat-label>Date fin </mat-label>
+            <input matInput [matDatepicker]="pickerFin" [(ngModel)]="local_data.date_fin" readonly
+              (ngModelChange)="changeDate(2)" style="cursor:pointer;">
+            <!-- <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle> [max]="maxDate"-->
+            <mat-datepicker #pickerFin [disabled]="false"></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div *ngIf="local_data.rapportTitre&&local_data.rapportTitre.canFilterTrajet&&canFilterTrajetListe&&canFilterTrajetListe[0]">
+          <mat-form-field appearance="legacy" color="primary" style="max-width: 100px;cursor:pointer;margin-left: 5px;">
+            <mat-label>Trajet </mat-label>
+            <mat-select [(ngModel)]="local_data.filterTrajet" (ngModelChange)="loadRepportData();local_data.filterVol='TOUS'">
+              <mat-option [value]="local_data.filterTrajetDefault">TOUS</mat-option>
+              <mat-option  *ngFor="let _elem of canFilterTrajetListe; let jr = index" [value]="_elem">{{_elem.title}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div *ngIf="local_data.filterTrajet&&local_data.filterTrajet.vols">
+          <mat-form-field appearance="legacy" color="primary" style="max-width: 100px;cursor:pointer;margin-left: 5px;">
+            <mat-label>Départ </mat-label>
+            <mat-select [(ngModel)]="local_data.filterVol" (ngModelChange)="loadRepportData()">
+              <mat-option value="TOUS">TOUS</mat-option>
+              <mat-option  *ngFor="let _elem of local_data.filterTrajet.vols; let jr = index" [value]="_elem.title">{{_elem.title}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+      </div>
+      <!-- <div fxLayout="row wrap" fxLayoutAlign="center center">
+        <button *ngIf="local_data.rapportTitre&&rapports[0]?.hasData" mat-icon-button color="primary"
+          (click)="excelExcel(false)" [disabled]="isLoading">
+          <mat-icon color="primary" matTooltip="Exporter en Excel" [matTooltipPosition]="'below'">file_download
+          </mat-icon>
+        </button>
+        <button *ngIf="local_data.rapportTitre&&rapports[0]?.hasData" mat-icon-button color="primary"
+          (click)="excelExcel(true)" [disabled]="isLoading">
+          <mat-icon color="primary" matTooltip="Imprimer" [matTooltipPosition]="'below'">print</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" (click)="selectionDialog('repportList')" [disabled]="isLoading">
+          <mat-icon color="primary" matTooltip="Liste des rapports disponibles" [matTooltipPosition]="'below'">list_alt
+          </mat-icon>
+        </button>
+      </div> -->
+    </div>
+
+  </div>
+
+  <!-- <div fxLayout="column" fxLayoutAlign="center center" *ngIf="isLoading" class="dialog-action"
+    style="min-height:100px;margin:0 85px;">
+    <div color="warn">
+      <small><b>Opération en cours. Veuillez patienter s'il vous plait.</b></small>
+    </div>
+    <mat-spinner color="primary" [diameter]="20"></mat-spinner>
+  </div> -->
+
+  <div fxLayout="column" fxLayoutAlign="start center" style="min-width:100%;margin-top: 95px;height: 69vh;overflow-y: scroll;">
+    <div *ngIf="rapports.length>0&&isLoading!=true&&!rapports[0]?.hasData">
+      <div color="warn">
+        <small><b>Aucune données trouvées pour cette période.</b></small>
+      </div>
+    </div>
+    <div id="printableRapport" *ngIf="rapports.length>0&&isLoading!=true&&rapports[0]?.hasData" #printDevi>
+      <table *ngFor="let rapport of rapports; let jr = index" class="printStyleTable"
+        style="background-color:#fff;width:100%;font-size:12px" cellspacing="0">
+        <tr *ngIf="rapport.title" style='text-align:center;padding: 10px 0 20px 0;'>
+          <th [attr.colspan]="(1 + rapport.header.length)">
+            <small *ngIf="selectedStation">STATION
+              <b>{{selectedStation.title}}</b>
+            </small>
+            <h4 style="margin: 0 !important;">{{ rapport.title }}</h4>
+            <small
+              *ngIf="local_data.rapportTitre&&local_data.rapportTitre.canDate&&local_data.date_debut&&local_data.date_fin">
+              <b>{{local_data.date_debut | date:'dd/MM/yyyy':'fr'}}<span *ngIf="local_data.date_debut!=local_data.date_fin">-{{local_data.date_fin | date:'dd/MM/yyyy':'fr'}}</span></b>
+            </small>
+          </th>
+        </tr>
+        <tr>
+          <th *ngIf="local_data.rapportTitre&&local_data.rapportTitre.canLine"
+            style='border-left: 1px solid #000000 !important;padding: 6px;border-top: 1px solid #000000 !important;'>
+            <div style='text-align: center;'>N°</div>
+          </th>
+          <th *ngFor="let ___sss of rapport.header; let i = index"
+            style='border-left: 1px solid #000000 !important;padding: 6px;border-top: 1px solid #000000 !important;'
+            [style.border-right]="i==(rapport.header.length - 1)?'1px solid black':'null'">
+            <div style='text-align: center;'>{{ ___sss.text }}</div>
+          </th>
+        </tr>
+        <tbody *ngFor="let ___sss of rapport.list; let i = index">
+          <tr *ngIf="!(___sss.isTotalLine&&___sss.isTotalLine==true)">
+            <td *ngIf="local_data.rapportTitre&&local_data.rapportTitre.canLine"
+              style='text-align: left;border-left: 1px solid #000000 !important;padding: 6px;border-top: 1px solid #000000 !important;'>
+              <div fxLayout="row" fxLayoutAlign="start center">
+                <div style="text-align: left;">
+                  {{i + 1}}
+                </div>
+              </div>
+            </td>
+            <td *ngFor="let _column of rapport.header; let j = index"
+              style='border-left: 1px solid #000000 !important;padding: 6px;'
+              [style.border-right]="j==(rapport.header.length - 1)?'1px solid black':'null'"
+              [style.border-top]="___sss.hideBorderTop?'null':'1px solid black'">
+              <div class="noPrint" style="float: left;position: relative;" *ngIf="j==0&&local_data.rapportTitre.canModal==true&&___sss">
+                <mat-icon class="noMarge" color="primary" (click)="openBottomSheet(___sss)" *ngIf="!isLoading&&!___sss.isloading">more_vert</mat-icon>
+                <mat-spinner color="primary" [diameter]="20" *ngIf="___sss.isloading"></mat-spinner>
+              </div>
+              <div *ngIf="j==0" [innerHTML]="___sss[_column.columnName]" style="width:100%;text-align: left;margin-left: 18px;margin-top: 5px;" [style.padding-top]="___sss.comptabiliteEcriture&&___sss.comptabiliteEcriture.id?'5px':'null'"></div>
+              <div *ngIf="j>0&&!isNumber(___sss[_column.columnName])" [innerHTML]="___sss[_column.columnName]"
+                style="width:100%;text-align: left;"></div>
+              <div *ngIf="j>0&&isNumber(___sss[_column.columnName])" style="width:100%;text-align: right;">{{
+                ___sss[_column.columnName] | number:'1.2-2':'fr'}}
+              </div>
+            </td>
+          </tr>
+          <tr *ngFor="let ___sssChild of ___sss.details; let ii = index">
+            <td
+              style='background-color:#ffe9e9;text-align: left;border-left: 1px solid #000000 !important;padding: 6px;'
+              [style.border-top]="___sssChild.hideBorderTop?'null':'1px solid black'">
+              <div style="width:100%;text-align: left;">{{(i + 1)}}.{{(ii + 1)}}</div>
+            </td>
+            <td *ngFor="let _column of rapport.header; let j = index"
+              style='background-color:#ffe9e9;border-left: 1px solid #000000 !important;padding: 6px;'
+              [style.border-right]="j==(rapport.header.length - 1)?'1px solid black':'null'"
+              [style.border-top]="___sssChild.hideBorderTop?'null':'1px solid black'">
+              <div *ngIf="j==0" [innerHTML]="___sssChild[_column.columnName]" style="width:100%;text-align: left;">
+              </div>
+              <div *ngIf="j>0&&!isNumber(___sssChild[_column.columnName])" [innerHTML]="___sssChild[_column.columnName]"
+                style="width:100%;text-align: left;"></div>
+              <div *ngIf="j>0&&isNumber(___sssChild[_column.columnName])" style="width:100%;text-align: right;">{{
+                ___sssChild[_column.columnName] | number:'1.2-2':'fr'}}</div>
+            </td>
+          </tr>
+          <tr *ngIf="___sss.isTotalLine&&___sss.isTotalLine==true">
+            <th *ngIf="local_data.rapportTitre&&local_data.rapportTitre.canLine"
+              style='text-align: left;padding: 6px;border-top: 1px solid #000000 !important;'>
+              <div fxLayout="row" fxLayoutAlign="start center">
+                <div style="text-align: left;">
+                  <!-- {{i + 1}} -->
+                </div>
+              </div>
+            </th>
+            <th *ngFor="let _column of rapport.header; let j = index"
+            style='padding: 6px;font-weight: bold;'
+              [style.border-top]="___sss.hideBorderTop?'null':'1px solid black'">
+              <div *ngIf="j==0" [innerHTML]="___sss[_column.columnName]" style="width:100%;text-align: left;" [style.padding-top]="___sss.comptabiliteEcriture&&___sss.comptabiliteEcriture.id?'5px':'null'"></div>
+              <div *ngIf="j>0&&!isNumber(___sss[_column.columnName])" [innerHTML]="___sss[_column.columnName]"
+                style="width:100%;text-align: left;"></div>
+              <div *ngIf="j>0&&isNumber(___sss[_column.columnName])" style="width:100%;text-align: right;">{{
+                ___sss[_column.columnName] | number:'1.2-2':'fr'}}</div>
+            </th>
+          </tr>
+        </tbody>
+        <!-- <tr>
+          <td
+            style="text-align: left;border-top: 1px solid #000000 !important;font-weight:bold;padding: 6px;font-size:15px;">
+            <strong *ngIf="sumFooterDataList()">TOTAL</strong>
+          </td>
+          <td *ngFor="let ___sss of rapport.footer; let j = index"
+            style="text-align: right;border-top: 1px solid #000000 !important;font-weight:bold;padding: 6px;font-size:15px;">
+            <strong *ngIf="isNumber(___sss)">{{___sss | number:'1.2-2':'fr'}}</strong>
+          </td>
+        </tr> -->
+      </table>
+
+    </div>
+
+  </div>
+  
+  <div id="fab-dismiss" *ngIf="fabTogglerState==='active'" (click)="onToggleFab()">
+  </div>
+  <div class="fab-center-container" fxLayout="row" fxLayoutAlign="center center">
+    <div class="fab-container" style="width: 100%;">
+      <div>
+
+        <div class="barre-btm" color="primary"
+          (focus)="(authService.roleEXist('rjvs_manage')&&!user.station)&&selectionDialog('station', {})" (click)="(authService.roleEXist('rjvs_manage')&&!user.station)&&selectionDialog('station', {})">
+          <b *ngIf="selectedStation">{{selectedStation?.code}}</b>
+          <b *ngIf="!selectedStation">AUCUNE STATION SÉLECTIONNÉ</b>
+          <small *ngIf="(authService.roleEXist('rjvs_manage')&&!user.station)"><br/>CLIQUEZ ICI POUR CHANGER DE STATION</small>
+      </div>
+
+      </div>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="selectedStation&&!isLoading"
+        (click)="onToggleFab()" matTooltip="{{(buttons.length)?'CACHER LE MENU':'AFFICHER LE MENU'}}"
+        [matTooltipPosition]="'right'">
+        <i class="material-icons-outlined" color="accent">splitscreen</i>
+      </button>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="isLoading">
+        <mat-spinner color="accent" style="stroke: #fff;" [diameter]="25"></mat-spinner>
+      </button>
+      <div>
+        <button *ngFor="let btn of buttons" mat-mini-fab matTooltip="{{btn.tooltip}}" [matTooltipPosition]="'right'"
+          class="fab-secondary" color="{{btn.color?btn.color:'secondary'}}" (click)="doFabAction(btn.id)">
+          <i class="material-icons">{{btn.icon}}</i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+<!-- 
+  <div class="fab-center-container" fxLayout="row" fxLayoutAlign="center center">
+    <div class="fab-container">
+      <div>
+
+        <p *ngIf="user.fonction!='STATION'&&!user.station"
+          style="position: absolute;bottom: -40px;width:100%;text-align:center;cursor:pointer;background-color:#cb6c38;color:#fff;padding: 1rem 1rem 0.5rem 1rem;font-size: 13px;"
+          color="primary" (focus)="selectionDialog('station', {})" (click)="selectionDialog('station', {})"
+          matTooltip="CLIQUEZ ICI POUR SELECTIONNER UNE STATION" [matTooltipPosition]="'above'">
+          <b *ngIf="selectedStation">
+            {{selectedStation?.title}}
+            <div *ngIf="local_data&&local_data.rapportTitre">
+              <small style="margin: 0 !important;">{{ local_data.rapportTitre.title }}</small>
+            </div>
+          </b>
+          <b *ngIf="!selectedStation">AUCUNE STATION SÉLECTIONNÉ</b>
+        </p>
+
+      </div>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="selectedStation&&!isLoading" (click)="onToggleFab()" matTooltip="{{(buttons.length)?'CACHER LE MENU':'AFFICHER LE MENU'}}" [matTooltipPosition]="'right'">
+        <i class="material-icons-outlined" color="accent">apps</i>
+      </button>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="isLoading">
+        <mat-spinner color="accent" [diameter]="25"></mat-spinner>
+      </button>
+      <div>
+        <button *ngFor="let btn of buttons"
+                mat-mini-fab matTooltip="{{btn.tooltip}}" [matTooltipPosition]="'right'"
+                class="fab-secondary"
+                color="{{btn.color?btn.color:'secondary'}}" (click)="doFabAction(btn.id)">
+          <i class="material-icons">{{btn.icon}}</i>
+        </button>
+      </div>
+    </div>
+  </div> -->
+
+  <div #hheader style="visibility:hidden">
+    <div class="page-header" style="text-align: center; background-color:#ffffff;">
+      <app-documentHeader></app-documentHeader>
+    </div>
+  </div>
+  <div #ffooter style="visibility:hidden">
+    <div class="page-footer" style="text-align: center; background-color:#ffffff;">
+      <app-documentFooter></app-documentFooter>
+    </div>
+  </div>
+</section>

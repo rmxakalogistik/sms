@@ -1,0 +1,70 @@
+<h2 mat-dialog-title>APPLIQUER UN FILTRE...</h2>
+<mat-dialog-content class="mat-typography">
+
+  <table style="width:100%;">
+    <tbody>
+      <tr>
+        <td>
+
+          <mat-form-field appearance="outline" color="accent">
+            <mat-label>Date début </mat-label>
+            <input matInput [matDatepicker]="pickerDebut" [(ngModel)]="local_data.filterValueDebut" [max]="maxDate" readonly>
+            <mat-datepicker-toggle matSuffix [for]="pickerDebut"></mat-datepicker-toggle>
+            <mat-datepicker-toggle matSuffix (click)="local_data.filterValueDebut=null" *ngIf="local_data.filterValueDebut!=null">
+              <mat-icon matDatepickerToggleIcon>clear</mat-icon>
+            </mat-datepicker-toggle>
+            <mat-datepicker #pickerDebut disabled="false"></mat-datepicker>
+          </mat-form-field>
+
+        </td>
+      </tr>
+      <tr>
+        <td>
+
+          <mat-form-field appearance="outline" color="accent">
+            <mat-label>Date fin </mat-label>
+            <input matInput [matDatepicker]="pickerFin" [(ngModel)]="local_data.filterValueFin" [max]="maxDate" readonly>
+            <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+            <mat-datepicker-toggle matSuffix (click)="local_data.filterValueFin=null" *ngIf="local_data.filterValueFin!=null">
+              <mat-icon matDatepickerToggleIcon>clear</mat-icon>
+            </mat-datepicker-toggle>
+            <mat-datepicker #pickerFin disabled="false"></mat-datepicker>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field color="accent">
+            <mat-label>Valeur...</mat-label>
+            <input matInput autocomplete="off" placeholder="Valeur..." #inputSearch [(ngModel)]="local_data.filterValue">
+            <button mat-button *ngIf="local_data.filterValue" matSuffix mat-icon-button aria-label="Clear" (click)="local_data.filterValue=null;">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button mat-dialog-close (click)="close()">ANNULER</button>
+  <button mat-raised-button [mat-dialog-close]="true" cdkFocusInitial color="accent" (click)="confirm(local_data)">APPLIQUER <mat-icon>filter_alt</mat-icon></button>
+</mat-dialog-actions>
+
+<!--<button mat-icon-button color="warn" class="close-button" (click)="close()">
+  <mat-icon>close</mat-icon>
+</button>
+
+<h5 mat-dialog-title><span style="font-size:20px !important;">APPLIQUER UN FILTRE...</span></h5>
+<div mat-dialog-content class="mat-elevation-z2">
+
+</div>
+<div mat-dialog-actions>
+  <div fxLayout="row" fxLayoutAlign="center center" style="width:100%">
+    <button class="ajouter_intro" mat-button color="accent" (click)="confirm(local_data)">APPLIQUER <mat-icon>filter_alt</mat-icon> </button>
+  </div>
+</div>-->
+
+
+

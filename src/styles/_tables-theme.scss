@@ -1,0 +1,27 @@
+@import '~@angular/material/theming';
+
+// Mixin to apply theme colors for both generated API sybox and markdown sybox (guides/overviews).
+@mixin sybox-site-tables-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+  $tableBorderOpacity: if($is-dark-theme, 0.08, 0.03);
+
+  .sybox-api table,
+  .sybox-markdown-table {
+    color: mat-color($foreground, text);
+  }
+
+  .sybox-api th,
+  .sybox-markdown-th {
+    background: mat-color($background, app-bar);
+  }
+
+  .sybox-api td,
+  .sybox-markdown-td {
+    border: 1px solid rgba(mat-color($foreground, secondary-text), $tableBorderOpacity);
+  }
+}

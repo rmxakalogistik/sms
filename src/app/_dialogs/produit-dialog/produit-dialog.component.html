@@ -1,0 +1,96 @@
+<section id="produitDialog" matDialogContainer>
+
+
+  <mat-toolbar id="mat-toolbar" class="navigation-toolbar" [ngStyle.lt-sm]="{'height': '50px'}" [class.navigation-is-mobile]="mobileQuery.matches" [class.mat-elevation-z0]="!isActive" [class.mat-elevation-z8]="isActive" [class.animated-header]="!isActivefadeInDown" [class.fadeInDown]="!isActivefadeInDown" [class.navigation-fixed]="!fixedTolbar">
+    <div class="dialog-action" fxLayout="column">
+      <div class="dialog-action" fxLayout="row">
+        <button id="menubutton" mat-icon-button (click)="close()" style="color:white;">
+          <mat-icon fontSet="material-icons-outlined">chevron_left</mat-icon>
+        </button>
+        <button mat-button style="color:white;line-height: normal;text-align: left;">
+          <span style="vertical-align:middle !important;padding: 5px 5px 5px 0;font-size: 12px;">{{action|uppercase}}<br />D'UN PRODUIT</span>
+        </button>
+        <span class="navigation-spacer"></span>
+        <button mat-button style="color:white;line-height: normal;text-align: left;" *ngIf="canMoveNext()&&!loading" matTooltip="Enregistrer" [matTooltipPosition]="'below'" (click)="confirm(formData.value)">
+          <span style="vertical-align:middle !important;font-size: 12px;" *ngIf="action != 'Suppression'">ENREGISTRER</span>
+          <span style="vertical-align:middle !important;font-size: 12px;" *ngIf="action == 'Suppression'">SUPPRIMER</span>
+          <mat-icon fontSet="material-icons-outlined">check</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+  <div class="navigation-empty" fxShow="false" fxShow.gt-xs="true"></div>
+
+  <div style="padding-top:4rem;" (onScroll)="detectScroll($event)">
+
+    <div fxLayout="column" fxLayoutAlign="center center" class="dialog-action" style="min-height:100px;margin-top:3rem;" *ngIf="loading">
+      <div color="warn" style="text-align:center;">
+        <small><b>Opération en cours.<br />Veuillez patienter s'il vous plait.</b></small>
+      </div>
+      <mat-spinner color="primary" [diameter]="40"></mat-spinner>
+    </div>
+
+    <mat-tab-group *ngIf="!loading" [formGroup]="formData" appDisableAutofill class="app-mat-tab">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          Infos
+        </ng-template>
+        <div class="dialog-form-main" style="padding-top:1rem;padding-bottom:30rem;" (onScroll)="detectScroll($event)">
+
+          <div fxLayout="column" fxLayoutAlign="start center" class="form-contain">
+
+            <div fxLayout="row wrap" fxLayoutAlign="start start">
+
+              <div style="width: 100%;padding: 0.3rem .3rem;">
+
+              </div>
+              <div fxLayout="column" *ngIf="local_data&&local_data.id&&action != 'Suppression'" style="width: 100%;padding: 0.3rem .3rem;">
+
+              </div>
+
+              <mat-form-field color="primary" appearance="fill">
+                <mat-label>Nom </mat-label>
+                <input appDisableAutofill matInput type="text" autocomplete="new-nom"
+                  [required]="isRequiredField('nom')" [formControl]="formData.get('nom')"
+                  [errorStateMatcher]="matcher">
+                <mat-error>
+                  <ng-container *ngFor="let error of errors(formData.get('nom'))">
+                    <small>{{ errorMessages[error] }} <br></small>
+                  </ng-container>
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field color="primary" appearance="fill">
+                <mat-label>Code </mat-label>
+                <input appDisableAutofill matInput type="text" autocomplete="new-code"
+                  [required]="isRequiredField('code')" [formControl]="formData.get('code')"
+                  [errorStateMatcher]="matcher">
+                <mat-error>
+                  <ng-container *ngFor="let error of errors(formData.get('code'))">
+                    <small>{{ errorMessages[error] }} <br></small>
+                  </ng-container>
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+
+          </div>
+
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+  </div>
+
+  <div class="fab-center-container" fxLayout="row" fxLayoutAlign="center center">
+    <div class="fab-container">
+      <button color="primary" mat-fab class="fab-toggler" *ngIf="canMoveNext()&&!loading" (click)="confirm(formData.value)">
+        <i class="material-icons" color="accent">check</i>
+      </button>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="loading">
+        <mat-spinner color="accent" [diameter]="25"></mat-spinner>
+      </button>
+    </div>
+  </div>
+
+</section>

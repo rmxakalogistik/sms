@@ -1,0 +1,107 @@
+<section id="selectDialogComponent">
+  <mat-toolbar id="top-toolbar" class="top-toolbar" [ngStyle.lt-sm]="{'height': '50px'}" [class.top-toolbar-is-mobile]="mobileQuery.matches" [class.mat-elevation-z0]="!isActive" [class.mat-elevation-z8]="isActive" [class.animated-header]="!isActivefadeInDown" [class.fadeInDown]="!isActivefadeInDown" [class.top-toolbar-fixed]="!fixedTolbar">
+    <div class="dialog-action" fxLayout="column">
+      <div class="dialog-action" fxLayout="row">
+        <button id="return-button" mat-icon-button (click)="close()" style="color:white;">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-button style="color:white;line-height: normal;text-align: left;">
+          <span style="vertical-align:middle !important;padding: 5px 5px 5px 0;font-size: 12px;">{{action|uppercase}}</span>
+        </button>
+        <span class="toolbar-spacer"></span>
+        <button mat-button color="accent" style="line-height: normal;" *ngIf="canMoveNext('AJOUTER')" matTooltip="AJOUTER" [matTooltipPosition]="'below'" (click)="doAction(filterValue)">
+          <span style="vertical-align:middle !important;font-size: 12px;">AJOUTER</span>
+          <mat-icon>add</mat-icon>
+        </button>
+        <button mat-button color="accent" style="line-height: normal;" *ngIf="canMoveNext('CHOISIR')" matTooltip="CHOISIR" [matTooltipPosition]="'below'" (click)="doAction(dataSelected)">
+          <span style="vertical-align:middle !important;font-size: 12px;">CHOISIR</span>
+          <mat-icon>check</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+  <mat-toolbar id="search-toolbar" class="search-toolbar" [ngStyle.lt-sm]="{'height': '50px'}" [class.search-toolbar-is-mobile]="mobileQuery.matches" [class.mat-elevation-z0]="!isActive" [class.mat-elevation-z8]="isActive" [class.animated-header]="!isActivefadeInDown" [class.fadeInDown]="!isActivefadeInDown" [class.search-toolbar-fixed]="!fixedTolbar">
+    <mat-form-field color="primary" class="search-input" *ngIf="!isLoadingResults">
+      <input cdkFocusInitial #inputuserSearch type="text" autocomplete="off" placeholder="Recherche..." appDisableAutofill matInput [(ngModel)]="filterValue" (keyup.enter)="$event.target.blur();dataSelected=null;userSearchUpdate.next(filterValue)">
+      <button mat-icon-button *ngIf="filterValue" matSuffix aria-label="Effacer" (click)="filterValue=null;this.userSearchUpdate.next(null);" color="warn">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-hint *ngIf="!local_data.preFill"><small>Cliquer sur <b>enter</b> pour lancer la recherche.</small></mat-hint>
+    </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="center center" *ngIf="isLoadingResults" class="dialog-action" style="padding:1rem;text-align:center">
+      <small><b>Chargement des données en cours. Veuillez patienter s'il vous plait.</b></small>
+    </div>
+  </mat-toolbar>
+  <div class="toolbar-and-wrapper-space" fxShow="true" fxShow.gt-xs="true"></div>
+
+  <div class="content-wrapper" (onScroll)="detectScroll($event)">
+    <div class="loading-box" fxLayout="column" fxLayoutAlign="center center" *ngIf="loading">
+      <div class="loading-box-text">
+        <small><b>Opération en cours.<br />Veuillez patienter s'il vous plait.</b></small>
+      </div>
+      <mat-spinner color="primary" [diameter]="40"></mat-spinner>
+    </div>
+    <div *ngIf="dataSelectedCurrent" style="padding: 1rem 4rem;text-align: center;">
+      <span>
+        <small><small>Selection actuelle:</small> {{dataSelectedCurrent}}</small>
+      </span>
+    </div>
+    <div class="content-page" *ngIf="!loading&&datas&&datas.list">
+      <mat-selection-list #selectionList [multiple]="false" [(ngModel)]="dataSelected">
+        <mat-list-option *ngFor="let item of datas.list | myfilter:filterValue; let i=index;" [selected]="(dataSelected?dataSelected==item:i==0)" [value]="item" (click)="dataSelected&&doAction(dataSelected)">
+          <div style="padding: 6px 0;">
+            <div *ngIf="datas.typeOfData=='stringArray'"><small>{{item}}</small></div>
+            <div *ngIf="datas.typeOfData=='objectArray'">
+              <small>
+                <div [innerHTML]="item[titleToAffich]"></div>
+              </small>
+              <hr *ngIf="item.bottomDivider&&item.bottomDivider==true"/>
+            </div>
+          </div>
+          <mat-icon style="position: absolute;right: 0;top: 17px;">arrow_forward_ios</mat-icon>
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+
+  </div>
+
+  <!--<div class="fab-center-container" fxLayout="row" fxLayoutAlign="center center">
+    <div class="fab-container">
+      <button color="primary" mat-fab class="fab-toggler" *ngIf="canMoveNext()&&!loading" (click)="confirm(formData_Step1.value)">
+        <i class="material-icons" color="accent">check</i>
+      </button>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="loading">
+        <mat-spinner color="accent" [diameter]="25"></mat-spinner>
+      </button>
+    </div>
+  </div>-->
+
+</section>
+
+
+<!--<mat-form-field mat-dialog-title color="accent">
+    <input autocomplete="off" placeholder="{{action | uppercase}}" type="text" style="text-align:left;" min="0" matInput [(ngModel)]="filterargs" (keydown)="inputChanged()">
+    <button mat-icon-button *ngIf="filterargs" matSuffix aria-label="Effacer" (click)="filterargs=''" color="warn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+  <mat-dialog-content class="mat-typography">
+    <div *ngIf="local_data.subaction"  [innerHTML]="local_data.subaction" class="subaction">
+    </div>
+    <div fxLayout="column" fxLayoutAlign="center center" *ngIf="loading" class="dialog-action">
+      <div color="warn">
+        <small><b>Opération en cours. Veuillez patienter s'il vous plait.</b></small>
+      </div>
+      <mat-spinner color="accent" [diameter]="20"></mat-spinner>
+    </div>
+    <mat-selection-list #selectionList [multiple]="false">
+      <mat-list-option *ngFor="let item of datas | myfilter:filterargs" [value]="item.data">
+        {{item.title}}
+      </mat-list-option>
+    </mat-selection-list>
+
+  </mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button (click)="close()">ANNULER</button>
+  <button mat-raised-button *ngIf="selectionList?.selectedOptions?.selected?.length>0" (click)="selectData()" cdkFocusInitial color="accent"><span *ngIf="canAdd">AJOUTER {{filterargs | uppercase}}</span><span *ngIf="!canAdd">CHOISIR</span></button>
+</mat-dialog-actions>-->

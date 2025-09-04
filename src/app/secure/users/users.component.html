@@ -1,0 +1,175 @@
+<section id="users" class="users">
+  <mat-toolbar class="app-toolbar mat-elevation-z1">
+    <mat-form-field color="primary" class="search-input" *ngIf="!isLoadingResults">
+      <mat-chip-list #chipList>
+        <mat-chip *ngFor="let txtFilter of txtFilters" [removable]="removable"
+          (removed)="remove(txtFilter)">
+          {{txtFilter}}
+          <button matChipRemove *ngIf="removable">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+        <input #inputuserSearch type="text" autocomplete="off" placeholder="RECHERCHE..." appDisableAutofill matInput
+          [(ngModel)]="filterValue" (keyup.enter)="$event.target.blur()"
+          [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)">
+      </mat-chip-list>
+      <button mat-icon-button *ngIf="filterValue||txtFilters.length>0" matSuffix aria-label="Effacer"
+        (click)="removeAll()" color="warn">
+        <mat-icon fontSet="material-icons-outlined">close</mat-icon>
+      </button>
+      <mat-hint><small *ngIf="filterValue">CLIQUER SUR <b>ENTER</b> POUR LANCER LA RECHERCHE.</small></mat-hint>
+    </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="center center" *ngIf="isLoadingResults" class="dialog-action"
+      style="padding:1rem;text-align:center;margin: 0 auto;">
+      <small fxFill><b>CHARGEMENT DES DONNÉES EN COURS.<br />VEUILLEZ PATIENTER S'IL VOUS PLAIT.</b></small>
+    </div>
+  </mat-toolbar>
+
+  <div class="wrapper-main">
+    <table mat-table #usertable [dataSource]="users" multiTemplateDataRows>
+
+      <!-- <ng-container matColumnDef="order">
+        <th mat-header-cell *matHeaderCellDef class="left background-header-transparent" style="color: #000;width: 50px;">
+          #
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="action-link" style="text-align: left;"> -->
+      <!-- <div fxLayout="row" fxLayoutAlign="center center">
+            <small>
+              {{paginator.pageIndex == 0 ? i + 1 : 1 + i + paginator.pageIndex * paginator.pageSize | number:'1.0-0':'fr'}}
+            </small>
+          </div> -->
+      <!-- <small>
+            {{element.shownumuni}}
+            </small>
+        </td>
+      </ng-container> -->
+
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef>
+          <small>NOM<br/>COMPLET</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;">
+          <small>
+            {{element.title}}
+            <small *ngIf="element.id==user.id" style="color:#cb6c38;"><br />(VOUS) </small>
+            <!-- <small *ngIf="element.shownumuni">
+              <br />
+              <span *ngIf="element.station">STATION {{element.station.nom}}</span>
+              <span *ngIf="!element.station">{{element.fonction}}</span>
+              
+            </small>
+            <small *ngIf="!element.isActive" [ngStyle]="{'color':element.isActive ? '#000000' : 'red'}"><br />{{element.isActive?'':'Compte bloqué'}}</small> -->
+          </small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>EMAIL</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <div style="text-align: left;">
+            <small>
+              <b>{{element.email}}</b>
+            </small>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fonction">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>TYPE DE<br/>COMPTE</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <small>{{element.fonction}}</small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>TÉL</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <small>{{element.phone}}</small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="gender">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>SEXE</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <small>{{element.gender}}</small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="bithdate">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>DATE DE<br>NAISSANCE</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <small>{{element.bithdatestr}}</small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="station">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>STATION</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <small>
+            <span *ngIf="element.station">{{element.station.nom}}</span>
+          </small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action" stickyEnd>
+        <th mat-header-cell *matHeaderCellDef class="center background-header-transparent">
+          #
+        </th>
+        <td mat-cell *matCellDef="let element" class="action-link center">
+          <!-- <div fxLayout="row" fxLayoutAlign="center center"> -->
+          <mat-icon fontSet="material-icons-outlined" class="noMarge" color="primary"
+            (click)="openUserBottomSheet(element)" *ngIf="!isLoadingResults">more_vert</mat-icon>
+          <!-- </div> -->
+
+        </td>
+      </ng-container>
+
+      <!--<tr mat-header-row *matHeaderRowDef="['header-data']; sticky: true" class="background-header-transparent">
+      </tr>-->
+      <tr mat-header-row *matHeaderRowDef="userDisplayedColumns" class="background-header-transparent"
+        style="visibility:visible;"></tr>
+      <tr mat-row *matRowDef="let row; columns: userDisplayedColumns; let i = dataIndex" class="main-table-row"
+        [class.example-expanded-row]="expandedElement === row" [class.highlight]="row.id == editedRowId"
+        [class.grayodd]="(i % 2) == 1"></tr>
+    </table>
+  </div>
+
+  <div class="pg-container">
+    <mat-paginator appPagination #myPaginator [length]="resultsLength" [pageSize]="30" [disabled]="isLoadingResults"
+      [hidePageSize]="true"></mat-paginator>
+  </div>
+
+  <div id="fab-dismiss" *ngIf="fabTogglerState==='active'" (click)="onToggleFab()">
+  </div>
+  <div class="fab-center-container" fxLayout="row" fxLayoutAlign="center center">
+    <div class="fab-container">
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="!isLoadingResults" (click)="onToggleFab()"
+        matTooltip="{{(buttons.length)?'CACHER LE MENU':'AFFICHER LE MENU'}}" [matTooltipPosition]="'right'">
+        <i class="material-icons" color="accent">admin_panel_settings</i>
+      </button>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="isLoadingResults">
+        <mat-spinner color="accent" [diameter]="25"></mat-spinner>
+      </button>
+      <div>
+        <button *ngFor="let btn of buttons" mat-mini-fab matTooltip="{{btn.tooltip}}" [matTooltipPosition]="'right'"
+          class="fab-secondary" color="{{btn.color?btn.color:'secondary'}}" (click)="doFabAction(btn.id)">
+          <i class="material-icons">{{btn.icon}}</i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</section>

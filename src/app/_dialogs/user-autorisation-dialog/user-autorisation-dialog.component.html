@@ -1,0 +1,127 @@
+<section id="userAutorisationDialog">
+
+
+  <mat-toolbar id="mat-toolbar" class="navigation-toolbar" [ngStyle.lt-sm]="{'height': '50px'}" [class.navigation-is-mobile]="mobileQuery.matches" [class.mat-elevation-z0]="!isActive" [class.mat-elevation-z8]="isActive" [class.animated-header]="!isActivefadeInDown" [class.fadeInDown]="!isActivefadeInDown" [class.navigation-fixed]="!fixedTolbar">
+    <div class="dialog-action" fxLayout="column">
+      <div class="dialog-action" fxLayout="row">
+        <button id="menubutton" mat-icon-button (click)="close()" style="color:white;">
+           <mat-icon fontSet="material-icons-outlined" >chevron_left</mat-icon>
+        </button>
+        <button mat-button style="color:white;line-height: normal;text-align: left;">
+          <span style="vertical-align:middle !important;padding: 5px 5px 5px 0;font-size: 12px;">{{action|uppercase}}<br />POUR <span>{{_passedUser?.firstName + ' ' + _passedUser?.lastName | uppercase}}</span></span>
+        </button>
+        <!--<span class="navigation-spacer"></span>
+        <button mat-button style="color:white;line-height: normal;text-align: left;" *ngIf="canMoveNext()&&!loading" matTooltip="Enregistrer" [matTooltipPosition]="'below'" (click)="confirm(formData_Step1.value)">
+          <span style="vertical-align:middle !important;font-size: 12px;">ENREGISTRER</span>
+           <mat-icon fontSet="material-icons-outlined" >check</mat-icon>
+        </button>-->
+      </div>
+    </div>
+  </mat-toolbar>
+  <div class="navigation-empty" fxShow="false" fxShow.gt-xs="true"></div>
+
+  <div style="padding-top:4rem;padding-bottom:30rem;" (onScroll)="detectScroll($event)">
+
+    <div fxLayout="column" fxLayoutAlign="center center" style="min-height:100px;margin-top:3rem;" *ngIf="loading">
+      <div color="warn" style="text-align:center;">
+        <small><b>Opération en cours.<br />Veuillez patienter s'il vous plait.</b></small>
+      </div>
+      <mat-spinner color="primary" [diameter]="40"></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading">
+
+      <div fxLayout="column" fxLayoutAlign="center center">
+        <div color="warn" style="text-align:center;">
+          <small><b>Vous pouvez cocher ou décocher les cases. Pour activer ou désactiver une autorisation.</b></small>
+        </div>
+      </div>
+
+      <table mat-table #autorisationstable id="autorisationstable" [dataSource]="autorisations">
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="position">
+          <th mat-header-cell *matHeaderCellDef> N° </th>
+          <td mat-cell *matCellDef="let element; let i = index;"> {{i+1}} </td>
+        </ng-container>
+
+        <!-- Autorisation Column -->
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef class="left"> Autorisation </th>
+          <td mat-cell *matCellDef="let element" class="left" [style.color]="element.error ? 'red' : 'black'"> {{element.role}} </td>
+        </ng-container>
+
+        <!-- Ajout Column -->
+        <ng-container matColumnDef="see">
+          <th mat-header-cell *matHeaderCellDef style="width:75px;"> Actif </th>
+          <td mat-cell *matCellDef="let element">
+            <span *ngIf="((element.id=='sysadmin'&&authService.roleEXist('sysadmin'))||element.see)&&!editMode"> <mat-icon fontSet="material-icons-outlined" >check_circle_outline</mat-icon></span>
+            <mat-checkbox *ngIf="element.id!='sysadmin'&&authService.roleEXist('comptes_manage')&&editMode" [(ngModel)]="element.see"
+                          color="primary" (change)="changeUserAutorisation(element, true)">
+              <!--{{subtask.name}}-->
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <!-- Ajout Column -->
+        <ng-container matColumnDef="add">
+          <th mat-header-cell *matHeaderCellDef style="width:75px;"> Ajouter </th>
+          <td mat-cell *matCellDef="let element">
+            <div *ngIf="element.isCRUD">
+              <span *ngIf="((element.id=='sysadmin'&&authService.roleEXist('sysadmin'))||element.add)&&!editMode"> <mat-icon fontSet="material-icons-outlined" >check_circle_outline</mat-icon></span>
+              <mat-checkbox *ngIf="(element.id!='sysadmin'&&authService.roleEXist('comptes_manage')&&editMode)" [(ngModel)]="element.add"
+                            color="primary" (change)="changeUserAutorisation(element)">
+                <!--{{subtask.name}}-->
+              </mat-checkbox>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Modifier Column -->
+        <ng-container matColumnDef="edit">
+          <th mat-header-cell *matHeaderCellDef style="width:75px;"> Modifier </th>
+          <td mat-cell *matCellDef="let element">
+            <div *ngIf="element.isCRUD">
+              <span *ngIf="((element.id=='sysadmin'&&authService.roleEXist('sysadmin'))||element.edit)&&!editMode"> <mat-icon fontSet="material-icons-outlined" >check_circle_outline</mat-icon></span>
+              <mat-checkbox *ngIf="(element.id!='sysadmin'&&authService.roleEXist('comptes_manage')&&editMode)" [(ngModel)]="element.edit"
+                            color="primary" (change)="changeUserAutorisation(element)">
+                <!--{{subtask.name}}-->
+              </mat-checkbox>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Suppression Column -->
+        <ng-container matColumnDef="delete">
+          <th mat-header-cell *matHeaderCellDef style="width:75px;"> Supprimer </th>
+          <td mat-cell *matCellDef="let element">
+            <div *ngIf="element.isCRUD">
+              <span *ngIf="((element.id=='sysadmin'&&authService.roleEXist('sysadmin'))||element.delete)&&!editMode"> <mat-icon fontSet="material-icons-outlined" >check_circle_outline</mat-icon></span>
+              <mat-checkbox *ngIf="(element.id!='sysadmin'&&authService.roleEXist('comptes_manage')&&editMode)" [(ngModel)]="element.delete"
+                            color="primary" (change)="changeUserAutorisation(element)">
+                <!--{{subtask.name}}-->
+              </mat-checkbox>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="autorisationDisplayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: autorisationDisplayedColumns;"></tr>
+      </table>
+
+    </div>
+
+  </div>
+
+  <!--<div class="fab-center-container" fxLayout="row" fxLayoutAlign="center center">
+    <div class="fab-container">
+      <button color="primary" mat-fab class="fab-toggler" *ngIf="canMoveNext()&&!loading" (click)="confirm(formData_Step1.value)">
+        <i class="material-icons" color="accent">check</i>
+      </button>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="loading">
+        <mat-spinner color="accent" [diameter]="25"></mat-spinner>
+      </button>
+    </div>
+  </div>-->
+
+</section>

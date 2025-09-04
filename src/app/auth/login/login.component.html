@@ -1,0 +1,75 @@
+<!--<header class="sybox-primary-header">
+    <h1>Ouverture de session</h1>
+ </header>-->
+  <main focusOnNavigation>
+    <div class="example-container">
+      <div class="form-container">
+        <form [formGroup]="loginForm" (submit)="onSubmit()">
+
+          <div class="logo">
+            <img [lazyLoad]="authImage" (click)="reloadApp()">
+          </div>
+
+          <div fxLayout="column" fxLayoutAlign="center center" *ngIf="loading" class="dialog-action" style="min-height:100px;">
+            <h4>Ouverture de session en cours. Veuillez patienter s'il vous plait.</h4>
+            <mat-spinner color="accent" [diameter]="40"></mat-spinner>
+          </div>
+
+          <div *ngIf="!loading">
+
+            <h4>Se connecter avec un compte</h4>
+
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>
+                Adresse e-mail ou N° de téléphone
+              </mat-label>
+              <input appDisableAutofill matInput formControlName="email" autocomplete="new-email">
+            </mat-form-field>
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>
+                Mot de passe
+              </mat-label>
+              <input appDisableAutofill matInput formControlName="password" [type]="hide ? 'password' : 'text'" autocomplete="new-password">
+              <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </mat-form-field>
+
+            <div fxLayout="row" fxLayoutAlign="center center" *ngIf="isforgotPassword">
+              <button class="forgot-password" mat-button color="accent" routerLink="/sds-forgot-password" type="button">Mot de passe oublié?</button>
+            </div>
+
+            <div class="dialog-action" fxLayout="row" fxLayoutAlign="center center">
+              <button [disabled]="loading" mat-flat-button color="accent" type="submit">
+                Ouvrir une session
+              </button>
+            </div>
+
+            <!--<mat-error class="divider" *ngIf="error">
+          <span>{{error}}</span>
+        </mat-error>-->
+
+          </div>
+
+          <!--<div class="orDivider">
+        <div class="line"><mat-divider></mat-divider></div>
+        <div class="text mat-typography">Ou</div>
+        <div class="line"><mat-divider></mat-divider></div>
+      </div>
+
+      <div class="dialog-action" fxLayout="row" fxLayoutAlign="center center">
+        <button mat-button color="accent" routerLink="/sds-forgot-password" type="button">Mot de passe oublié?</button>
+      </div>-->
+
+
+
+        </form>
+
+      </div>
+      <div class="bas-blanc">
+        <!-- <img class="logo-bas" [lazyLoad]="authImage_bas"> -->
+        <!--<img class="logo-bas" [lazyLoad]="authImage_logoaccelerateur">-->
+        <!-- <img class="logo-bas" [lazyLoad]="authImage_secondaire"> -->
+        <div style="font-size:12px;"><small>{{'v ' + version}}</small></div>
+        <div style="font-size:12px;" *ngIf="localip"><small>Addresse IP locale: {{localip}}</small></div>
+      </div>
+    </div>
+  </main>

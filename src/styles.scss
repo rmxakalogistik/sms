@@ -1,0 +1,13 @@
+
+@import './material-theme';
+@import './app-theme';
+@import './styles/tables';
+@import './styles/general';
+/*@import './styles/api';
+@import './styles/markdown';*/
+
+// Include material core styles.
+@include mat-core();
+
+@include angular-material-theme($theme);
+@include sybox-app-theme($theme);

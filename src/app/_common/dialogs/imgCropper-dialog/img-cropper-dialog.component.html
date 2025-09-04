@@ -1,0 +1,41 @@
+<section id="imgCropperDialogComponent">
+  <mat-toolbar id="top-toolbar" class="top-toolbar" [ngStyle.lt-sm]="{'height': '50px'}" [class.top-toolbar-is-mobile]="mobileQuery.matches" [class.mat-elevation-z0]="!isActive" [class.mat-elevation-z8]="isActive" [class.animated-header]="!isActivefadeInDown" [class.fadeInDown]="!isActivefadeInDown" [class.top-toolbar-fixed]="!fixedTolbar">
+    <div class="dialog-action" fxLayout="column">
+      <div class="dialog-action" fxLayout="row">
+        <button id="return-button" mat-icon-button (click)="close()" style="color:white;">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-button style="color:white;line-height: normal;text-align: left;">
+          <span style="vertical-align:middle !important;padding: 5px 5px 5px 0;font-size: 12px;">RECADRAGE D'IMAGE</span>
+        </button>
+        <span class="toolbar-spacer"></span>
+        <button mat-button color="accent" style="line-height: normal;" *ngIf="canMoveNext('CHOISIR')" matTooltip="CHOISIR" [matTooltipPosition]="'below'" (click)="doAction(croppedImage)">
+          <span style="vertical-align:middle !important;font-size: 12px;">CONFIRMER</span>
+          <mat-icon>check</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+  <div class="toolbar-and-wrapper-space" fxShow="true" fxShow.gt-xs="true"></div>
+
+  <div class="content-wrapper" (onScroll)="detectScroll($event)">
+   
+    <div class="content-page">
+      <image-cropper [imageChangedEvent]="local_data.event"
+                     [imageBase64] = "local_data.imageBase64String"
+                     [maintainAspectRatio]="false"
+                     [aspectRatio]="1 / 1"
+                     [resizeToHeight]="480"
+                     [imageQuality]="100"
+                     format="jpeg"
+                     (imageCropped)="imageCropped($event)"
+                     (imageLoaded)="imageLoaded($event)"
+                     (cropperReady)="cropperReady()"
+                     (loadImageFailed)="loadImageFailed()"
+                     ></image-cropper>
+    </div>
+
+  </div>
+
+</section>
+

@@ -1,0 +1,267 @@
+<section id="commandes" class="commandes">
+  <mat-toolbar class="app-toolbar mat-elevation-z1">
+    <mat-form-field color="primary" class="search-input" *ngIf="!isLoadingResults">
+      <mat-chip-list #chipList>
+        <mat-chip *ngFor="let txtFilter of txtFilters" [removable]="removable"
+          (removed)="remove(txtFilter)">
+          {{txtFilter}}
+          <button matChipRemove *ngIf="removable">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+        <input #inputcommandeSearch type="text" autocomplete="off" placeholder="RECHERCHE..." appDisableAutofill matInput
+          [(ngModel)]="filterValue" (keyup.enter)="$event.target.blur()"
+          [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)">
+      </mat-chip-list>
+      <button mat-icon-button *ngIf="filterValue||txtFilters.length>0" matSuffix aria-label="Effacer"
+        (click)="removeAll()" color="warn">
+        <mat-icon fontSet="material-icons-outlined">close</mat-icon>
+      </button>
+      <mat-hint><small *ngIf="filterValue">CLIQUER SUR <b>ENTER</b> POUR LANCER LA RECHERCHE.</small></mat-hint>
+    </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="center center" *ngIf="isLoadingResults" class="dialog-action"
+      style="padding:1rem;text-align:center;margin: 0 auto;">
+      <small fxFill><b>CHARGEMENT DES DONNÉES EN COURS.<br />VEUILLEZ PATIENTER S'IL VOUS PLAIT.</b></small>
+    </div>
+  </mat-toolbar>
+
+  <div class="wrapper-main">
+    <table mat-table #commandetable [dataSource]="commandes" multiTemplateDataRows>
+<!-- 
+      <ng-container matColumnDef="order" sticky>
+        <th mat-header-cell *matHeaderCellDef class="left background-header-transparent"
+          style="width: 50px;">
+          N°
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="action-link center"
+          style="text-align: center;">
+          <div fxLayout="row" fxLayoutAlign="center center">
+
+            {{paginator.pageIndex == 0 ? i + 1 : 1 + i + paginator.pageIndex * paginator.pageSize |
+            number:'1.0-0':'fr'}}
+          </div>
+        </td>
+      </ng-container> -->
+
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef class="left" >
+          <small>DATE</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <small fxLayout="row" fxLayoutAlign="start center">
+            <span style="font-size: 13px;color: red;" class="material-icons-outlined" *ngIf="!(element.id>0)&&!element.loading">
+              hourglass_top
+              </span>
+            <span><b>{{element.date | date:'dd/MM/yyyy'}}</b></span>
+            
+          </small>
+          <div style="font-size: 8px;" *ngIf="element.dateCreation">
+            <b>CRÉE LE<div>{{element.dateCreation | date:'dd/MM/yyyy HH:mm'}}</div></b>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="banque">
+        <th mat-header-cell *matHeaderCellDef class="left" >
+          <small>BANQUE</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <small *ngIf="element.banqueChecque&&element.banqueChecque.banque">
+            <span>{{element.banqueChecque.banque.nom}}</span>
+            <div>
+              <small>{{element.banqueChecque.devise}}</small>
+            </div>
+          </small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="checque">
+        <th mat-header-cell *matHeaderCellDef class="left" >
+          <small>N° CHEQUE</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <small>
+            <span><b>{{element.numcheque}}</b></span>
+          </small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fournisseur">
+        <th mat-header-cell *matHeaderCellDef class="left" >
+          <small>FOURNISSEUR</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <small *ngIf="element.fournisseur">
+            <span>{{element.fournisseur.nom}}</span>
+          </small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="zone">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>ZONE<br/></small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <div style="text-align: left;">
+            <small *ngFor="let item of element.commandeProduits; let ii = index;">
+              <span *ngIf="item.fournisseurProduit">{{item.fournisseurProduit.zone.nom}}</span><br/>
+            </small>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="destination">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>DESTINATION<br/></small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <div style="text-align: left;">
+            <small *ngFor="let item of element.commandeProduits; let ii = index;">
+              <span *ngIf="item.stationProduitId">{{item.stationProduit.station.code}}</span>
+              <span *ngIf="item.clientProduitId">{{item.clientProduit.client.nom}}</span><br/>
+            </small>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="livrprev">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>A LIVRER<br/>AU PLUS TARD</small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <div style="text-align: left;">
+            <small *ngFor="let item of element.commandeProduits; let ii = index;">
+              <span *ngIf="item.dateLivraisonPrevue">{{item.dateLivraisonPrevue | date:'dd/MM/yyyy'}}</span>
+            </small>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="produit">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>LITRES<br/></small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <div style="text-align: left;">
+            <small *ngFor="let item of element.commandeProduits; let ii = index;">
+              <span>{{item.qte|number:'1.2-2':'fr'}} </span>
+              <small>
+                <b>
+                  <span *ngIf="item.stationProduitId">{{item.stationProduit.produit.code}}</span>
+                <span *ngIf="item.clientProduitId">{{item.clientProduit.produit.code}}</span>
+                </b>
+              </small>
+              <br/>
+            </small>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="pu">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>PU<br/>CDF<br/></small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <div style="text-align: left;">
+            <small *ngFor="let item of element.commandeProduits; let ii = index;">
+              <span>{{item.prix|number:'1.2-2':'fr'}}</span><br/>
+            </small>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="pt">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>PT<br/>CDF<br/></small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <div style="text-align: left;">
+            <small *ngFor="let item of element.commandeProduits; let ii = index;">
+              <span>{{(item.qte*item.prix)|number:'1.2-2':'fr'}}</span><br/>
+            </small>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="bl">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>BL<br/><br/></small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <div style="text-align: left;">
+            <small *ngFor="let item of element.commandeProduits; let ii = index;">
+              <span>{{item.bl}}</span><br/>
+            </small>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="dc">
+        <th mat-header-cell *matHeaderCellDef class="left">
+          <small>DC<br/><br/></small>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex;" class="left">
+          <div style="text-align: left;">
+            <small *ngFor="let item of element.commandeProduits; let ii = index;">
+              <span>{{item.dc}}</span><br/>
+            </small>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action" stickyEnd>
+        <th mat-header-cell *matHeaderCellDef class="center background-header-transparent">
+          #
+        </th>
+        <td mat-cell *matCellDef="let element; let i = dataIndex" class="action-link center">
+          <!-- <div fxLayout="row" fxLayoutAlign="center center"> -->
+              <mat-spinner color="primary" [diameter]="20" *ngIf="element.loading"></mat-spinner>
+            <mat-icon fontSet="material-icons-outlined" class="noMarge" color="primary"
+              (click)="openCommandeBottomSheet(element, i)" *ngIf="!isLoadingResults&&!element.loading">more_vert</mat-icon>
+          <!-- </div> -->
+
+        </td>
+      </ng-container>
+
+      <!--<tr mat-header-row *matHeaderRowDef="['header-data']; sticky: true" class="background-header-transparent">
+  </tr>-->
+      <tr mat-header-row *matHeaderRowDef="commandeDisplayedColumns" class="background-header-transparent"
+        style="visibility:visible;"></tr>
+      <tr mat-row *matRowDef="let row; columns: commandeDisplayedColumns; let i = dataIndex" class="main-table-row"
+        [class.example-expanded-row]="expandedElement === row" [class.highlight]="row.id == editedRowId"
+        [class.grayodd]="(i % 2) == 1"></tr>
+    </table>
+  </div>
+
+  <div class="pg-container">
+    <mat-paginator appPagination #myPaginator [length]="resultsLength" [pageSize]="30" [disabled]="isLoadingResults"
+      [hidePageSize]="true"></mat-paginator>
+  </div>
+
+  <div id="fab-dismiss" *ngIf="fabTogglerState==='active'" (click)="onToggleFab()">
+  </div>
+  <div class="fab-center-container" fxLayout="row" fxLayoutAlign="center center">
+    <div class="fab-container">
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="!isLoadingResults" (click)="onToggleFab()"
+        matTooltip="{{(buttons.length)?'CACHER LE MENU':'AFFICHER LE MENU'}}" [matTooltipPosition]="'right'">
+        <i class="material-icons" color="accent">date_range</i>
+      </button>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="isLoadingResults">
+        <mat-spinner color="accent" [diameter]="25"></mat-spinner>
+      </button>
+      <div>
+        <button *ngFor="let btn of buttons" mat-mini-fab matTooltip="{{btn.tooltip}}" [matTooltipPosition]="'right'"
+          class="fab-secondary" color="{{btn.color?btn.color:'secondary'}}" (click)="doFabAction(btn.id)">
+          <i class="material-icons">{{btn.icon}}</i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<div *ngIf="dataToPrintPosTicket" style="position:absolute;bottom:-5000px;visibility:hidden;">
+  <app-commandePrintable [dataToPrintPosTicket]="dataToPrintPosTicket" [qrcodevalue]="dataToPrintPosTicket.qrcodevalue">
+  </app-commandePrintable>
+</div>

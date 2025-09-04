@@ -1,0 +1,409 @@
+<section id="rjvs" class="rjvs">
+  <mat-toolbar class="app-toolbar mat-elevation-z1">
+
+    <mat-form-field (click)="picker.open()" style="cursor: pointer;" color="primary" class="search-input"
+      *ngIf="!isLoadingResults&&(selectedRjv?.loading!=true)">
+      <mat-label>Date RJV </mat-label>
+      <input style="cursor: pointer;font-weight: bold;font-size: 25px;" [max]="maxDate" appDisableAutofill matInput
+        autocomplete="new-date" [matDatepicker]="picker" [required]="true" readonly [(ngModel)]="currenteDate"
+        (ngModelChange)="getNewRjv()">
+      <span matPrefix style="font-size: 13px;color: red;" class="material-icons-outlined"
+        *ngIf="!(selectedRjv?.id>0)&&(selectedRjv?.loading!=true)">
+        hourglass_top
+      </span>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker [dateClass]="dateClass()" #picker></mat-datepicker>
+    </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="center center" *ngIf="isLoadingResults" class="dialog-action"
+      style="padding:1rem;text-align:center;margin: 0 auto;">
+      <small fxFill><b>CHARGEMENT DES DONNÉES EN COURS.<br />VEUILLEZ PATIENTER S'IL VOUS PLAIT.</b></small>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="center center" *ngIf="(selectedRjv?.loading==true)" class="dialog-action"
+      style="padding:1rem;text-align:center;margin: 0 auto;">
+      <small fxFill><b>PUBLICATION DES DONNÉES EN COURS.</b></small>
+    </div>
+  </mat-toolbar>
+
+  <div class="wrapper-main">
+    <div fxLayout="column" fxLayoutAlign="start center">
+      <div fxLayout="row wrap" fxLayoutAlign="start start">
+        <div style="width: 100%;margin: 0.3rem 0.2rem;text-align: center;font-weight: bold;padding: 1rem 0;">
+          PRODUITS
+        </div>
+        <div (click)="(selectedRjv?.loading!=true)&&(selectedRjv?.datareceptionLoading!=true)&&openReceptionDialog()"
+          class="mat-field-priv" style="border: 1px solid #000;text-align: center;padding:.25rem;">
+          <div class="operation-div">
+            <div class="operation-title">
+              <mat-spinner color="primary" *ngIf="(selectedRjv?.datareceptionLoading==true)" [diameter]="20"
+                style="position: absolute;"></mat-spinner>
+              <small>RECEPTIONS</small>
+            </div>
+            <div class="operation-body" *ngIf="selectedRjv&&selectedRjv.receptionProduits">
+              <table style="width: 100%;" cellspacing="0" cellpadding="0">
+                <tr>
+                  <th style="text-align: left;"><small>PRODUIT</small></th>
+                  <th style="text-align: right;"><small>QTE</small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('commandeProduit.stationProduit.produit.nom', 'qte')(selectedRjv.receptionProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">{{item.lib}}</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div (click)="(selectedRjv?.loading!=true)&&(selectedRjv?.dataIndexLoading!=true)&&openIndexDialog()"
+          class="mat-field-priv" style="border: 1px solid #000;text-align: center;padding:.25rem;">
+          <div class="operation-div">
+            <div class="operation-title">
+              <mat-spinner color="primary" *ngIf="(selectedRjv?.dataIndexLoading==true)" [diameter]="20"
+                style="position: absolute;"></mat-spinner>
+              <small>SORTIES POMPE</small>
+            </div>
+            <div class="operation-body" *ngIf="selectedRjv&&selectedRjv.indexProduits">
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="table-border-bottom">
+                <tr>
+                  <th style="text-align: left;"><small>PRODUIT</small></th>
+                  <th style="text-align: right;"><small>QTE</small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('stationProduit.produit.nom', 'qte')(selectedRjv.indexProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">{{item.lib}}</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="table-border-bottom">
+                <tr>
+                  <th style="text-align: left;"><small>MONTANT</small></th>
+                  <th style="text-align: right;"><small>CDF</small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('stationProduit.produit.nom', 'montant')(selectedRjv.indexProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">{{item.lib}}</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="font-weight-bold">
+                <tr>
+                  <th style="text-align: left;"><small></small></th>
+                  <th style="text-align: right;"><small></small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('rjvId', 'montant')(selectedRjv.indexProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">TOTAL</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div
+          (click)="(selectedRjv?.loading!=true)&&(selectedRjv?.dataprelevementLoading!=true)&&openPrelevementDialog()"
+          class="mat-field-priv" style="border: 1px solid #000;text-align: center;padding:.25rem;">
+          <div class="operation-div">
+            <div class="operation-title">
+              <mat-spinner color="primary" *ngIf="(selectedRjv?.dataprelevementLoading==true)" [diameter]="20"
+                style="position: absolute;"></mat-spinner>
+              <small>PRELEVEMENTS</small>
+            </div>
+            <div class="operation-body" *ngIf="selectedRjv&&selectedRjv.prelevementProduits">
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="table-border-bottom">
+                <tr>
+                  <th style="text-align: left;"><small>PRODUIT</small></th>
+                  <th style="text-align: right;"><small>QTE</small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('stationProduit.produit.nom', 'qte')(selectedRjv.prelevementProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">{{item.lib}}</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="table-border-bottom">
+                <tr>
+                  <th style="text-align: left;"><small>MONTANT</small></th>
+                  <th style="text-align: right;"><small>CDF</small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('stationProduit.produit.nom', 'montant')(selectedRjv.prelevementProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">{{item.lib}}</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="font-weight-bold">
+                <tr>
+                  <th style="text-align: left;"><small></small></th>
+                  <th style="text-align: right;"><small></small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('rjvId', 'montant')(selectedRjv.prelevementProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">TOTAL</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div (click)="(selectedRjv?.loading!=true)&&(selectedRjv?.datagroupeelecLoading!=true)&&openGroupeelecDialog()"
+          class="mat-field-priv mat-field-priv-short1" style="border: 1px solid #000;text-align: center;padding:.25rem;">
+          <div class="operation-div">
+            <div class="operation-title">
+              <mat-spinner color="primary" *ngIf="(selectedRjv?.datagroupeelecLoading==true)" [diameter]="20"
+                style="position: absolute;"></mat-spinner>
+              <small>GROUPE ELEC.</small>
+            </div>
+            <div class="operation-body" *ngIf="selectedRjv&&selectedRjv.groupeelecProduits">
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="table-border-bottom">
+                <tr>
+                  <th style="text-align: left;"><small>PRODUIT</small></th>
+                  <th style="text-align: right;"><small>QTE</small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('stationProduit.produit.nom', 'qte')(selectedRjv.groupeelecProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">{{item.lib}}</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="table-border-bottom">
+                <tr>
+                  <th style="text-align: left;"><small>MONTANT</small></th>
+                  <th style="text-align: right;"><small>CDF</small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('stationProduit.produit.nom', 'montant')(selectedRjv.groupeelecProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">{{item.lib}}</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="font-weight-bold">
+                <tr>
+                  <th style="text-align: left;"><small></small></th>
+                  <th style="text-align: right;"><small></small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('rjvId', 'montant')(selectedRjv.groupeelecProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">TOTAL</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div (click)="(selectedRjv?.loading!=true)&&(selectedRjv?.dataremisecuveLoading!=true)&&openRemisecuveDialog()"
+          class="mat-field-priv mat-field-priv-short1" style="border: 1px solid #000;text-align: center;padding:.25rem;">
+          <div class="operation-div">
+            <div class="operation-title">
+              <mat-spinner color="primary" *ngIf="(selectedRjv?.dataremisecuveLoading==true)" [diameter]="20"
+                style="position: absolute;"></mat-spinner>
+              <small>REMISES EN CUVE</small>
+            </div>
+            <div class="operation-body" *ngIf="selectedRjv&&selectedRjv.remisecuveProduits">
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="table-border-bottom">
+                <tr>
+                  <th style="text-align: left;"><small>PRODUIT</small></th>
+                  <th style="text-align: right;"><small>QTE</small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('stationProduit.produit.nom', 'qte')(selectedRjv.remisecuveProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">{{item.lib}}</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="table-border-bottom">
+                <tr>
+                  <th style="text-align: left;"><small>MONTANT</small></th>
+                  <th style="text-align: right;"><small>CDF</small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('stationProduit.produit.nom', 'montant')(selectedRjv.remisecuveProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">{{item.lib}}</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+              <table style="width: 100%;" cellspacing="0" cellpadding="0" class="font-weight-bold">
+                <tr>
+                  <th style="text-align: left;"><small></small></th>
+                  <th style="text-align: right;"><small></small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('rjvId', 'montant')(selectedRjv.remisecuveProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">TOTAL</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.total|number:'1.2-2'}}</span></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div (click)="(selectedRjv?.loading!=true)&&(selectedRjv?.dataClotureLoading!=true)&&openClotureDialog()"
+          class="mat-field-priv mat-field-priv-big" style="border: 1px solid #000;text-align: center;padding:.25rem;">
+          <div class="operation-div">
+            <div class="operation-title">
+              <mat-spinner color="primary" *ngIf="(selectedRjv?.dataClotureLoading==true)" [diameter]="20"
+                style="position: absolute;"></mat-spinner>
+              <small>STOCKS CITERNES</small>
+            </div>
+            <div class="operation-body" *ngIf="selectedRjv&&selectedRjv.clotureProduits" style="font-size: 80%;">
+              <table style="width: 100%;" cellspacing="0" cellpadding="0">
+                <tr>
+                  <th style="text-align: left;"><small>PRODUIT</small></th>
+                  <th style="text-align: right;"><small>OUV.</small></th>
+                  <th style="text-align: right;"><small>CLOT</small></th>
+                  <th style="text-align: right;"><small>BONI/MALI</small></th>
+                </tr>
+                <tr
+                  *ngFor="let item of getSubTotals('stationProduit.produit.nom', 'qte', 'debut', 'fin')(selectedRjv.clotureProduits);let i = index;">
+                  <td style="text-align: left;">
+                    <span *ngIf="item.lib">{{item.lib}}</span>
+                  </td>
+                  <td style="text-align: right;"><span>{{item.debut|number:'1.2-2'}}</span></td>
+                  <td style="text-align: right;"><span>{{item.fin|number:'1.2-2'}}</span></td>
+                  <td style="text-align: right;">
+                    <span>{{((getVenteByProducts(item.lib)-getRcByProducts(item.lib))-((item.debut+getReceptionByProducts(item.lib))-item.fin))|number:'1.2-2'}}</span>
+                    <span class="material-icons-outlined boni-check" *ngIf="((getVenteByProducts(item.lib)-getRcByProducts(item.lib))-((item.debut+getReceptionByProducts(item.lib))-item.fin))>0">
+                      arrow_upward
+                    </span>
+                    <span class="material-icons-outlined mali-check" *ngIf="((getVenteByProducts(item.lib)-getRcByProducts(item.lib))-((item.debut+getReceptionByProducts(item.lib))-item.fin))<0">
+                      arrow_downward
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div style="width: 100%;margin: 0.3rem 0.2rem;text-align: center;font-weight: bold;padding: 1rem 0;">
+          TRESORERIE
+        </div>
+        <div (click)="(commonList&&commonList.banques)&&(selectedRjv?.loading!=true)&&(selectedRjv?.dataversementLoading!=true)&&openVersementDialog()"
+          class="mat-field-priv mat-field-priv-short" style="border: 1px solid #000;text-align: center;padding:.25rem;">
+          <div class="operation-div">
+            <div class="operation-title">
+              <mat-spinner color="primary" *ngIf="(selectedRjv?.dataversementLoading==true)" [diameter]="20"
+                style="position: absolute;"></mat-spinner>
+              <small>DEPOTS BANQUE</small>
+            </div>
+            <div class="operation-body" *ngIf="!(commonList&&commonList.banques)&&!(selectedRjv&&selectedRjv.versements)">
+              <div fxLayout="column" fxLayoutAlign="center center">
+                <span style="margin: 0;color:rgb(166, 166, 255)">Aucune banques trouvées.<br/>Modification impossible</span>
+              </div>
+            </div>
+            <div class="operation-body" *ngIf="(commonList&&commonList.banques)&&!(selectedRjv&&selectedRjv.versements)">
+              <div fxLayout="column" fxLayoutAlign="center center">
+                <span style="margin: 0;color:rgb(166, 166, 255)">Aucune données.<br/>Cliquez içi pour ajouter.</span>
+              </div>
+            </div>
+            <div class="operation-body" *ngIf="selectedRjv&&selectedRjv.versements">
+              <table style="width: 100%;" cellspacing="0" cellpadding="0">
+                <tr *ngFor="let item of getSubTotals('rjvId', 'montant')(selectedRjv.versements);let i = index;">
+                  <td style="text-align: right;"><span>{{item.total|number:'1.0-0'}} CDF</span></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div (click)="(selectedRjv?.loading!=true)&&(selectedRjv?.datadepenseLoading!=true)&&openDepenseDialog()"
+          class="mat-field-priv mat-field-priv-short" style="border: 1px solid #000;text-align: center;padding:.25rem;">
+          <div class="operation-div">
+            <div class="operation-title">
+              <mat-spinner color="primary" *ngIf="(selectedRjv?.datadepenseLoading==true)" [diameter]="20"
+                style="position: absolute;"></mat-spinner>
+              <small>DEPENSES</small>
+            </div>
+            <div class="operation-body" *ngIf="selectedRjv&&selectedRjv.depenses">
+              <table style="width: 100%;" cellspacing="0" cellpadding="0">
+                <tr *ngFor="let item of getSubTotals('rjvId', 'montant')(selectedRjv.depenses);let i = index;">
+                  <td style="text-align: right;"><span>{{item.total|number:'1.0-0'}} CDF</span></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="mat-field-priv" style="border: 1px solid #000;text-align: center;padding:.25rem;">
+          <div class="operation-div">
+            <div class="operation-title"><small>MANQUANTS</small></div>
+            <div class="operation-body">
+
+            </div>
+          </div>
+        </div> -->
+        <div (click)="(selectedRjv?.loading!=true)&&(selectedRjv?.datamanquantLoading!=true)&&openManquantDialog()"
+          class="mat-field-priv mat-field-priv-short" style="border: 1px solid #000;text-align: center;padding:.25rem;">
+          <div class="operation-div">
+            <div class="operation-title">
+              <mat-spinner color="primary" *ngIf="(selectedRjv?.datamanquantLoading==true)" [diameter]="20"
+                style="position: absolute;"></mat-spinner>
+              <small>MANQUANTS</small>
+            </div>
+            <div class="operation-body" *ngIf="selectedRjv&&selectedRjv.manquants">
+              <table style="width: 100%;" cellspacing="0" cellpadding="0">
+                <tr *ngFor="let item of getSubTotals('rjvId', 'montant')(selectedRjv.manquants);let i = index;">
+                  <td style="text-align: right;"><span>{{item.total|number:'1.0-0'}} CDF</span></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="fab-dismiss" *ngIf="fabTogglerState==='active'" (click)="onToggleFab()">
+  </div>
+  <div class="fab-center-container" fxLayout="row" fxLayoutAlign="center center">
+    <div class="fab-container" style="width: 5%;">
+      <div>
+
+        <div class="barre-btm" color="primary"
+          (focus)="(authService.roleEXist('rjvs_manage')&&!user.station)&&selectionDialog('station', {})"
+          (click)="(authService.roleEXist('rjvs_manage')&&!user.station)&&selectionDialog('station', {})">
+          <b *ngIf="selectedStation">{{selectedStation?.code}}</b>
+          <b *ngIf="!selectedStation">AUCUNE STATION SÉLECTIONNÉ</b>
+          <small *ngIf="(authService.roleEXist('rjvs_manage')&&!user.station)"><br />CLIQUEZ ICI POUR CHANGER DE
+            STATION</small>
+        </div>
+
+      </div>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="selectedStation&&!isLoadingResults"
+        (click)="onToggleFab()" matTooltip="{{(buttons.length)?'CACHER LE MENU':'AFFICHER LE MENU'}}"
+        [matTooltipPosition]="'right'">
+        <i class="material-icons-outlined" color="accent">splitscreen</i>
+      </button>
+      <button mat-fab color="primary" class="fab-toggler" *ngIf="isLoadingResults">
+        <mat-spinner color="accent" style="stroke: #fff;" [diameter]="25"></mat-spinner>
+      </button>
+      <div>
+        <button *ngFor="let btn of buttons" mat-mini-fab matTooltip="{{btn.tooltip}}" [matTooltipPosition]="'right'"
+          class="fab-secondary" color="{{btn.color?btn.color:'secondary'}}" (click)="doFabAction(btn.id)">
+          <i class="material-icons">{{btn.icon}}</i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</section>

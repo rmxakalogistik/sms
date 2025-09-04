@@ -1,0 +1,37 @@
+@import '~@angular/material/theming';
+@import '../../styles/constants';
+
+@mixin secure-component-theme($theme) {
+  /*ap-root {
+    background: linear-gradient(120deg, rgba(133, 133, 255, 0.30), rgba(89, 94, 255, 0.30));
+    background-image: url('/assets/img/bg-01.jpg');
+    background-position: right;
+    background-repeat: no-repeat;
+      background-size: 100% auto;
+  }*/
+  app-secure {
+    display: block;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /*background-image: url('/assets/img/bg-01.jpg');
+    background-position: top;
+    background-repeat: no-repeat;
+    background-size: 100% 50px;*/
+    /*padding-bottom:200px;*/
+  }
+
+  @media (min-width: 1px) and (max-width: 600px) {
+    /* Target devices between 1px and 600px. */
+    app-secure {
+      /*background-image: url('/assets/img/bg-01-sm.jpg');
+      background-position: top;
+      background-repeat: no-repeat;
+      background-size: 100% 50px;*/
+    }
+  }
+}
+

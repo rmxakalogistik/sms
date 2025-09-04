@@ -1,0 +1,20 @@
+<h5 mat-dialog-title class="confirm-dialog-title mat-title"><span>{{title}}</span></h5>
+<div mat-dialog-content class="mat-elevation-z2">
+  <p>{{message}}</p>
+</div>
+<div mat-dialog-actions>
+  <div fxLayout="row" fxLayoutAlign="center center" style="width:100%">
+    <button *ngIf="title!='Information'" mat-raised-button color="{{color}}" (click)="onConfirm()">Oui</button>
+    <button *ngIf="title!='Information'" mat-button (click)="onDismiss()">Non</button>
+    <button *ngIf="title=='Information'" mat-raised-button color="{{color}}" (click)="onConfirm()">Ok</button>
+  </div>
+</div>
+
+
+<!--<div *ngIf="title!='Information'" mat-dialog-actions class="dialog-action" fxLayout="row" fxLayoutAlign="center center">
+  <button mat-raised-button color="{{color}}" (click)="onConfirm()">Oui</button>
+  <button mat-button (click)="onDismiss()">Non</button>
+</div>
+<div *ngIf="title=='Information'" mat-dialog-actions class="dialog-action" fxLayout="row" fxLayoutAlign="center center">
+  <button mat-raised-button color="{{color}}" (click)="onConfirm()">Ok</button>
+</div>-->

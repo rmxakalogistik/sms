@@ -1,0 +1,38 @@
+/*.scrollOff {
+  overflow: hidden !important;
+}
+
+section {
+  margin-top: 135px;
+  margin-bottom: 135px;
+}
+
+.material-icons {
+  color: mat-color($accent, 700);
+}
+
+.text-muted {
+  color: mat-color($accent, A700);
+}
+
+.navigation-toolbar {
+  background-color: mat-color($accent);
+}
+
+#mobilelogo {
+  margin-top: 56px;
+}
+
+.about-hover-effect {
+  @include mat-elevation-transition;
+  @include mat-elevation(8);
+}
+
+.about-hover-effect .mat-card {
+  background-color: mat-color($accent, 100);
+}
+
+.about-hover-effect i {
+  color: mat-color($accent, A700);
+}*/
+

@@ -1,0 +1,109 @@
+mat-icon {
+  font-weight: bold;
+}
+
+.form-dialog-title {
+  text-align: center;
+}
+
+.dialog-action {
+  width: 100%;
+  /*margin-top: 20px;*/
+}
+
+.right-button {
+  margin-left: 50px;
+}
+
+mat-form-field{
+    width:100%;
+}
+
+mat-datepicker-toggle {
+  display: inline-block;
+}
+
+::ng-deep .error-snackbar {
+  background: #d40000;
+  color: #ffffff;
+  font-size: 10px;
+
+  mat-button {
+    color: #ffffff;
+  }
+}
+
+::ng-deep .success-snackbar {
+  background: #00d42b;
+  color: #ffffff;
+  font-size: 10px;
+
+  mat-button {
+    color: #ffffff;
+  }
+}
+
+::ng-deep .mat-horizontal-stepper-header {
+  &[ng-reflect-selected="true"].mat-step-header {
+    height: 26px !important;
+    max-height: 26px !important;
+  }
+
+  &[ng-reflect-selected="false"].mat-step-header {
+    height: 26px !important;
+    max-height: 26px !important;
+  }
+}
+
+/*::ng-deep .mat-horizontal-stepper-header-container {
+  display: none !important;
+}*/
+
+/*.mat-horizontal-stepper-header {
+  height: 26px  !important;
+}*/
+
+.close-button {
+  float: right;
+  top: -14px;
+  right: -24px;
+}
+
+/*mat-step {
+  height: auto !important;
+  max-height: calc(100vh - 200px) !important;
+  max-height: none;
+}
+*/
+
+div[mat-dialog-content] {
+  min-height: 78vh !important;
+  max-height: 78vh !important;
+}
+
+@media (min-width: 1px) and (max-width: 600px) {
+  div[mat-dialog-content] {
+    min-height: 68vh !important;
+    max-height: 68vh !important;
+  }
+}
+
+
+table.details {
+  th.styll, td.styll {
+    border: solid 1px #000;
+    padding: 3px;
+  }
+
+  td.styll:hover {
+    cursor: pointer;
+    background-color: #6093fb;
+    color: #fff;
+  }
+
+  tr.styll:hover {
+    cursor: pointer;
+    background-color: #95b8ff;
+    color: #fff;
+  }
+}

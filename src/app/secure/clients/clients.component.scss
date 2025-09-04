@@ -1,0 +1,249 @@
+@import "../../../app-colors";
+
+#clients {
+  display: block;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+  padding-bottom: 4rem;
+  background-color: #fff !important;
+
+  ::ng-deep .app-toolbar {
+    padding: 0 1rem;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+    z-index: 1000;
+    height: 65px;
+    font: inherit !important;
+
+    .search-input {
+      width: 100%;
+    }
+    .mat-standard-chip {
+      transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      padding: 7px 12px;
+      border-radius: 16px;
+      align-items: center;
+      cursor: default;
+      min-height: 24px;
+      height: 1px;
+      font-size: 11px;
+      .mat-icon {
+        height: 19px;
+        width: 19px;
+        margin-top: 2px;
+        font-size: 19px;
+        margin-left: 7px;
+      }
+    }
+    .mat-chip-list-wrapper .mat-standard-chip {
+      margin: 0;
+    }
+    .mat-standard-chip.mat-chip-with-trailing-icon {
+      padding-top: 9px;
+      padding-bottom: 7px;
+      padding-right: 21px;
+      padding-left: 12px;
+    }
+    .mat-standard-chip .mat-chip-remove,
+    .mat-standard-chip .mat-chip-trailing-icon {
+      width: 14px;
+      height: 26px;
+      cursor: pointer;
+      border: none;
+      background-color: transparent;
+      margin-left: -5px !important;
+    }
+  }
+
+  ::ng-deep .mat-form-field-appearance-legacy,
+  ::ng-deep .mat-form-field-subscript-wrapper {
+    margin-top: 0.2em;
+  }
+
+  .highlight {
+    animation: highlight 30s;
+  }
+
+  .grayodd {
+    background-color: #f8f8f8;
+  }
+
+  @keyframes highlight {
+    0% {
+      background: #86db7f;
+    }
+
+    100% {
+      background: none;
+    }
+  }
+
+  .fab-center-container {
+    width: 56px !important;
+    height: 56px !important;
+    margin: 0 auto !important;
+
+    .fab-container {
+      position: fixed;
+      bottom: 30px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      z-index: 1000;
+
+      > div {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+        margin-bottom: 5px;
+
+        button {
+          margin-bottom: 17px;
+        }
+      }
+    }
+
+    .fab-toggler {
+      float: right;
+      z-index: 100;
+    }
+  }
+
+  #fab-dismiss {
+    position: fixed;
+    top: -500px !important;
+    left: -500px !important;
+    right: -500px !important;
+    bottom: -500px !important;
+    z-index: 999;
+  }
+
+  .wrapper-main {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    overflow: auto;
+    /*border-bottom: 1px solid $primary-color-dark;*/
+    tr.main-table-row {
+      margin-bottom: 5px !important;
+
+      td {
+        /*border-bottom: 1px dashed #888 !important;*/
+      }
+    }
+  }
+
+  table {
+    width: 100vw;
+    min-width: 100vw;
+    padding-bottom: 20px;
+
+    th,
+    td {
+      text-align: left;
+      width: auto !important;min-width: 75px;
+    }
+
+    // th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
+    //   text-align: center;
+    //   padding-left: 7px !important;
+    //   padding-right: 5px !important;
+    //   left: -2px !important;
+    // }
+
+    // th.padding:first-of-type {
+    //   padding-left: 0 !important;
+    //   padding-right: 0 !important;
+    // }
+
+    
+    th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type {
+      min-width: 24px;
+    }
+
+
+    .left {
+      text-align: left;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    tr.example-detail-row {
+      height: 0;
+    }
+
+    tr.example-element-row:not(.example-expanded-row):hover {
+      background: whitesmoke;
+    }
+
+    tr.example-element-row:not(.example-expanded-row):active {
+      background: #efefef;
+    }
+
+    .example-element-row td {
+      border-bottom-width: 0;
+    }
+
+    .example-element-detail {
+      overflow: hidden;
+      display: flex;
+    }
+
+    .example-element-diagram {
+      min-width: 80px;
+      /*border: 2px solid black;*/
+      padding: 8px;
+      font-weight: lighter;
+      margin: 8px 0;
+      height: 50px;
+    }
+
+    .example-element-symbol {
+      font-weight: bold;
+      font-size: 40px;
+      line-height: normal;
+    }
+
+    .example-element-description {
+      padding: 16px;
+    }
+
+    .example-element-description-attribution {
+      opacity: 0.5;
+    }
+  }
+
+  .mat-column-action {
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    flex: 0 0 10px !important;
+    width: 10px !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+
+    .noMarge {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      cursor: pointer;
+    }
+  }
+}

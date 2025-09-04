@@ -1,0 +1,17 @@
+<h5 class="menu_bottom-dialog-title mat-title" mat-dialog-title>
+  <small>
+    {{titre}}
+  </small>
+  <small *ngIf="subtitre">
+    <br/>
+    <small>
+      {{subtitre}}
+    </small>
+  </small>
+</h5>
+<mat-nav-list>
+  <a  mat-list-item (click)="openLink($event, action)" *ngFor="let action of actions">
+    <mat-icon *ngIf="action.icon">{{action.icon}}</mat-icon>
+    <span mat-line>{{action.text}}</span>
+  </a>
+</mat-nav-list>
